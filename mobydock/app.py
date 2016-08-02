@@ -66,7 +66,7 @@ def seed():
     db.create_all()
 
     messages = [
-        "Thanks good sir. I'm feeling quite healthy!",
+        "Thanks good sir! I'm feeling quite healthy!",
         'Thanks for the meal buddy.',
         "Please stop feeding me. I'm getting huge!"
     ]
