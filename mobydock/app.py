@@ -8,7 +8,7 @@ from sqlalchemy.sql.expression import func
 
 
 stream_handler = logging.StreamHandler()
-stream_handler.setLevel(logging.INFO)
+stream_handler.setLevel(logging.DEBUG)
 
 db = SQLAlchemy()
 redis_store = FlaskRedis.from_custom_provider(StrictRedis)
