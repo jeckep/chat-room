@@ -13,6 +13,6 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-VOLUME ["mobydock/static"]
+VOLUME ["$INSTALL_PATH/mobydock/static"]
 
 CMD gunicorn -b 0.0.0.0:8000 "mobydock.app:create_app()"
