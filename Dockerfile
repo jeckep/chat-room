@@ -1,18 +1,25 @@
-FROM python:2.7.10-slim
+FROM java:8
 MAINTAINER Yevgeniy Poluektov <yevgeniy.v.poluektov@gmail.com>
 
-RUN apt-get update && apt-get install -qq -y build-essential libpq-dev postgresql-client-9.4 --fix-missing --no-install-recommends
+# Install maven
+RUN apt-get update && apt-get install -y maven
 
 ENV INSTALL_PATH /mobydock
 RUN mkdir -p $INSTALL_PATH
 
 WORKDIR $INSTALL_PATH
 
-COPY requirements.txt requirements.txt
-RUN pip install -r requirements.txt
+# Prepare by downloading dependencies
+ADD pom.xml /$INSTALL_PATH/pom.xml
+RUN ["mvn", "dependency:resolve"]
+RUN ["mvn", "verify"]
 
-COPY . .
+# Adding source, compile and package into a fat jar
+ADD src /$INSTALL_PATH/src
+RUN ["mvn", "package"]
 
-VOLUME ["$INSTALL_PATH/mobydock/static"]
+VOLUME ["$INSTALL_PATH/src/main/resources/static"]
 
-CMD gunicorn -b 0.0.0.0:8000 "mobydock.app:create_app()"
+
+EXPOSE 4567
+CMD ["/usr/lib/jvm/java-8-openjdk-amd64/bin/java", "-jar", "target/sparkexample-jar-with-dependencies.jar"]
