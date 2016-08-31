@@ -17,29 +17,13 @@ import static spark.Spark.get;
 import static spark.Spark.staticFiles;
 
 public class App {
-    final static String[] messages = new String[]{
-            "Thanks good sir! I'm feeling quite healthy!",
-            "Thanks for the meal buddy.",
-            "Please stop feeding me. I'm getting huge!"
-    };
-
-
     public static void main(String[] args) {
+        final Jedis jedis = initRedis();
+        final DB db = initDB();
+        final Map model = initModel(jedis);
+
         staticFiles.location("/static");
 
-        //postgres
-        //sql2o
-        final Sql2o sql2o = new Sql2o("jdbc:postgresql://postgres:5432/mobydock",
-                "mobydock", "yourpassword", new PostgresQuirks());
-        DB db = new DBImpl(sql2o);
-
-        Jedis jedis = new Jedis("redis");
-        initRedis(jedis);
-
-        Map model = new HashMap();
-        model.put("feed_count", jedis.get("feed_count"));
-
-        // layout.html file is in resources/templates directory
         get("/", (rq, rs) -> {
             return new ModelAndView(model, "layout.html");
         }, new MustacheTemplateEngine());
@@ -52,16 +36,40 @@ public class App {
         }, new MustacheTemplateEngine());
 
         get("/seed", (rq, rs) -> {
-            for(String msg: messages){
-                db.createMessage(msg);
-            }
+            populateDB(db);
             return new ModelAndView(model, "layout.html");
         }, new MustacheTemplateEngine());
     }
 
-    public static void initRedis(Jedis jedis){
+    public static Jedis initRedis(){
+        Jedis jedis =  new Jedis("redis");
         if(!jedis.exists("feed_count")){
             jedis.set("feed_count", "0");
+        }
+        return jedis;
+    }
+
+    public static DB initDB(){
+        Sql2o sql2o = new Sql2o("jdbc:postgresql://postgres:5432/mobydock",
+                "mobydock", "yourpassword", new PostgresQuirks());
+        return new DBImpl(sql2o);
+    }
+
+    public static Map initModel(Jedis jedis){
+        Map model = new HashMap();
+        model.put("feed_count", jedis.get("feed_count"));
+        return model;
+    }
+
+    public static void populateDB(DB db){
+        final String[] messages = new String[]{
+                "Thanks good sir! I'm feeling quite healthy!",
+                "Thanks for the meal buddy.",
+                "Please stop feeding me. I'm getting huge!"
+        };
+
+        for(String msg: messages){
+            db.createMessage(msg);
         }
     }
 }
