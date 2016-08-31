@@ -3,6 +3,7 @@ postgres:
   environment:
     POSTGRES_USER: mobydock
     POSTGRES_PASSWORD: yourpassword
+    POSTGRES_DB: mobydock
   ports:
     - '5432:5432'
   volumes:
@@ -18,13 +19,13 @@ redis:
     - redis-server
     - --appendonly yes
 
-mobydock:
-  build: .
-  environment:
-    LOG_LEVEL: info
-  command: /usr/lib/jvm/java-8-openjdk-amd64/bin/java -jar target/sparkexample-jar-with-dependencies.jar
-  links:
-    - postgres
-    - redis
-  ports:
-    - '4567:4567'
+#mobydock:
+#  build: .
+#  environment:
+#    LOG_LEVEL: info
+#  command: /usr/lib/jvm/java-8-openjdk-amd64/bin/java -jar target/sparkexample-jar-with-dependencies.jar
+#  links:
+#    - postgres
+#    - redis
+#  ports:
+#    - '4567:4567'

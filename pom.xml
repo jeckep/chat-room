@@ -43,6 +43,18 @@
             <scope>compile</scope>
         </dependency>
 
+        <!--Postgres-->
+        <dependency>
+            <groupId>org.sql2o</groupId>
+            <artifactId>sql2o</artifactId>
+            <version>1.5.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>9.4-1201-jdbc41</version>
+        </dependency>
+
     </dependencies>
     <build>
         <plugins>
@@ -55,7 +67,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>sparkexample.Hello</mainClass>
+                            <mainClass>sparkexample.App</mainClass>
                             <classpathPrefix>dependency-jars/</classpathPrefix>
                         </manifest>
                     </archive>
@@ -86,7 +98,7 @@
                             </descriptorRefs>
                             <archive>
                                 <manifest>
-                                    <mainClass>sparkexample.Hello</mainClass>
+                                    <mainClass>sparkexample.App</mainClass>
                                 </manifest>
                             </archive>
                         </configuration>
