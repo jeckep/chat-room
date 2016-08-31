@@ -1,6 +1,7 @@
 package sparkexample;
 
 
+import redis.clients.jedis.Jedis;
 import spark.ModelAndView;
 import spark.template.mustache.MustacheTemplateEngine;
 
@@ -22,8 +23,11 @@ public class Hello {
     public static void main(String[] args) {
         staticFiles.location("/static");
 
+        Jedis jedis = new Jedis("redis");
+        jedis.set("feed_count", "0");
+
         Map model = new HashMap();
-        model.put("feed_count", 0);
+        model.put("feed_count", jedis.get("feed_count"));
 
         // layout.html file is in resources/templates directory
         get("/", (rq, rs) -> {
@@ -31,7 +35,8 @@ public class Hello {
         }, new MustacheTemplateEngine());
 
         get("/feed", (rq, rs) -> {
-            model.put("feed_count", ((int)model.get("feed_count")) + 1);
+            jedis.incr("feed_count");
+            model.put("feed_count", jedis.get("feed_count"));
             model.put("message", messages[new Random().nextInt(3)]);
             return new ModelAndView(model, "layout.html");
         }, new MustacheTemplateEngine());
