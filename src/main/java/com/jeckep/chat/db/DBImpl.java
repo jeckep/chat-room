@@ -26,8 +26,8 @@ public class DBImpl implements DB {
     @Override
     public List getAllMessages() {
         try (Connection conn = sql2o.open()) {
-            List<Message> messages = conn.createQuery("select * from message")
-                    .executeAndFetch(Message.class);
+            List<Msg> messages = conn.createQuery("select * from message")
+                    .executeAndFetch(Msg.class);
             return messages;
         }
     }

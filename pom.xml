@@ -68,6 +68,12 @@
             <version>1.16.8</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.j2html</groupId>
+            <artifactId>j2html</artifactId>
+            <version>0.7</version>
+        </dependency>
+
     </dependencies>
     <build>
         <plugins>
@@ -80,7 +86,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.jeckep.chat.App</mainClass>
+                            <mainClass>com.jeckep.chat.Chat</mainClass>
                             <classpathPrefix>dependency-jars/</classpathPrefix>
                         </manifest>
                     </archive>
@@ -111,7 +117,7 @@
                             </descriptorRefs>
                             <archive>
                                 <manifest>
-                                    <mainClass>com.jeckep.chat.App</mainClass>
+                                    <mainClass>com.jeckep.chat.Chat</mainClass>
                                 </manifest>
                             </archive>
                         </configuration>
