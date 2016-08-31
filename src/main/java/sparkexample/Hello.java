@@ -24,7 +24,7 @@ public class Hello {
         staticFiles.location("/static");
 
         Jedis jedis = new Jedis("redis");
-        jedis.set("feed_count", "0");
+        initRedis(jedis);
 
         Map model = new HashMap();
         model.put("feed_count", jedis.get("feed_count"));
@@ -40,5 +40,11 @@ public class Hello {
             model.put("message", messages[new Random().nextInt(3)]);
             return new ModelAndView(model, "layout.html");
         }, new MustacheTemplateEngine());
+    }
+
+    public static void initRedis(Jedis jedis){
+        if(!jedis.exists("feed_count")){
+            jedis.set("feed_count", "0");
+        }
     }
 }
