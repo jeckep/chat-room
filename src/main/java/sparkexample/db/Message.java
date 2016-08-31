@@ -1,14 +1,10 @@
 package sparkexample.db;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
+@Data
+@AllArgsConstructor
 public class Message {
     String message;
-
-    public Message(String message) {
-        this.message = message;
-    }
-
-    public String getMessage() {
-        return message;
-    }
 }
