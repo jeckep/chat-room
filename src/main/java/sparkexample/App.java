@@ -1,6 +1,7 @@
 package sparkexample;
 
 
+import org.flywaydb.core.Flyway;
 import org.sql2o.Sql2o;
 import org.sql2o.quirks.PostgresQuirks;
 import redis.clients.jedis.Jedis;
@@ -18,7 +19,10 @@ import static spark.Spark.get;
 import static spark.Spark.staticFiles;
 
 public class App {
+    public static final String DB_URL = "jdbc:postgresql://postgres:5432/" + System.getenv(Envs.DB_NAME);
+
     public static void main(String[] args) {
+        migrateDB();
         final Jedis jedis = initRedis();
         final DB db = initDB();
         final Map model = initModel(jedis);
@@ -51,7 +55,7 @@ public class App {
     }
 
     public static DB initDB(){
-        Sql2o sql2o = new Sql2o("jdbc:postgresql://postgres:5432/" + System.getenv(Envs.DB_NAME),
+        Sql2o sql2o = new Sql2o(DB_URL,
                 System.getenv(Envs.DB_USER), System.getenv(Envs.DB_PASSWORD), new PostgresQuirks());
         return new DBImpl(sql2o);
     }
@@ -72,5 +76,11 @@ public class App {
         for(String msg: messages){
             db.createMessage(msg);
         }
+    }
+
+    public static void migrateDB(){
+        Flyway flyway = new Flyway();
+        flyway.setDataSource(DB_URL, System.getenv(Envs.DB_USER), System.getenv(Envs.DB_PASSWORD));
+        flyway.migrate();
     }
 }
