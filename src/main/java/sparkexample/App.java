@@ -6,6 +6,7 @@ import org.sql2o.quirks.PostgresQuirks;
 import redis.clients.jedis.Jedis;
 import spark.ModelAndView;
 import spark.template.mustache.MustacheTemplateEngine;
+import sparkexample.constants.Envs;
 import sparkexample.db.DB;
 import sparkexample.db.DBImpl;
 
@@ -50,8 +51,8 @@ public class App {
     }
 
     public static DB initDB(){
-        Sql2o sql2o = new Sql2o("jdbc:postgresql://postgres:5432/mobydock",
-                "mobydock", "yourpassword", new PostgresQuirks());
+        Sql2o sql2o = new Sql2o("jdbc:postgresql://postgres:5432/" + System.getenv(Envs.DB_NAME),
+                System.getenv(Envs.DB_USER), System.getenv(Envs.DB_PASSWORD), new PostgresQuirks());
         return new DBImpl(sql2o);
     }
 
