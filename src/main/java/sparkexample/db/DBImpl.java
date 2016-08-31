@@ -5,9 +5,7 @@ import org.sql2o.Sql2o;
 
 import java.util.List;
 
-/**
- * Created by jeck on 31.08.16.
- */
+
 public class DBImpl implements DB {
     private Sql2o sql2o;
 
