@@ -1,4 +1,4 @@
-package sparkexample.db;
+package com.jeckep.chat.db;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

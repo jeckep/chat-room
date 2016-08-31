@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>spark-example</groupId>
-    <artifactId>spark-example</artifactId>
+    <groupId>com.jeckep</groupId>
+    <artifactId>chat</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <dependencies>
@@ -80,7 +80,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>sparkexample.App</mainClass>
+                            <mainClass>com.jeckep.chat.App</mainClass>
                             <classpathPrefix>dependency-jars/</classpathPrefix>
                         </manifest>
                     </archive>
@@ -111,7 +111,7 @@
                             </descriptorRefs>
                             <archive>
                                 <manifest>
-                                    <mainClass>sparkexample.App</mainClass>
+                                    <mainClass>com.jeckep.chat.App</mainClass>
                                 </manifest>
                             </archive>
                         </configuration>

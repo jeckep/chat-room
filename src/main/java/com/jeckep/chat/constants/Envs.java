@@ -1,4 +1,4 @@
-package sparkexample.constants;
+package com.jeckep.chat.constants;
 
 /**
  * Created by jeck on 31.08.16.

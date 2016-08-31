@@ -1,4 +1,4 @@
-package sparkexample;
+package com.jeckep.chat;
 
 
 import org.flywaydb.core.Flyway;
@@ -10,9 +10,9 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 import spark.template.mustache.MustacheTemplateEngine;
-import sparkexample.constants.Envs;
-import sparkexample.db.DB;
-import sparkexample.db.DBImpl;
+import com.jeckep.chat.constants.Envs;
+import com.jeckep.chat.db.DB;
+import com.jeckep.chat.db.DBImpl;
 
 import java.util.HashMap;
 import java.util.Map;
