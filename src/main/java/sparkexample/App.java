@@ -19,7 +19,7 @@ import static spark.Spark.get;
 import static spark.Spark.staticFiles;
 
 public class App {
-    public static final String DB_URL = "jdbc:postgresql://postgres:5432/" + System.getenv(Envs.DB_NAME);
+    public static final String DB_URL = System.getenv(Envs.DB_URL);
 
     public static void main(String[] args) {
         migrateDB();
