@@ -9,13 +9,10 @@ import com.jeckep.chat.login.LoginController;
 import com.jeckep.chat.message.Msg;
 import com.jeckep.chat.user.UserDao;
 import com.jeckep.chat.util.Path;
-import com.jeckep.chat.util.ViewUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.websocket.api.Session;
 import org.flywaydb.core.Flyway;
 import org.json.JSONObject;
-import spark.ModelAndView;
-import spark.template.mustache.MustacheTemplateEngine;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,7 +22,6 @@ import java.util.Map;
 
 import static j2html.TagCreator.*;
 import static spark.Spark.*;
-import static spark.debug.DebugScreen.enableDebugScreen;
 
 @Slf4j
 public class Application {
@@ -49,12 +45,17 @@ public class Application {
 //        enableDebugScreen();
 
 
-        get(Path.Web.CHAT_ROOM,      ChatroomController.serveChatPage);
+        get(Path.Web.CHAT_ROOM + "/:id",      ChatroomController.serveChatPage);
         get(Path.Web.INDEX,          IndexController.serveIndexPage);
         get(Path.Web.LOGIN,          LoginController.serveLoginPage);
         post(Path.Web.LOGIN,         LoginController.handleLoginPost);
         post(Path.Web.LOGOUT,        LoginController.handleLogoutPost);
 //        get("*",                     ViewUtil.notFound);
+
+        exception(Exception.class, (exception, request, response) -> {
+            log.error("Unhandled exception",exception);
+        });
+
 
     }
 

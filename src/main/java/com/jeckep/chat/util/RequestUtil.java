@@ -2,6 +2,8 @@ package com.jeckep.chat.util;
 
 import spark.Request;
 
+import javax.servlet.http.Cookie;
+
 public class RequestUtil {
 
     public static String getQueryLocale(Request request) {
@@ -52,6 +54,15 @@ public class RequestUtil {
     public static boolean clientAcceptsJson(Request request) {
         String accept = request.headers("Accept");
         return accept != null && accept.contains("application/json");
+    }
+
+    public static String getJsessionid(Request request){
+        for(Cookie cookie: request.raw().getCookies()){
+            if("JSESSIONID".equals(cookie.getName())){
+                return cookie.getValue();
+            }
+        }
+        return null;
     }
 
 }

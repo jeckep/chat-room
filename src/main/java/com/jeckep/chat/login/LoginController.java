@@ -1,5 +1,6 @@
 package com.jeckep.chat.login;
 
+import com.jeckep.chat.Application;
 import com.jeckep.chat.user.*;
 import com.jeckep.chat.util.*;
 import com.jeckep.chat.util.Path;
@@ -28,8 +29,11 @@ public class LoginController {
             return ViewUtil.render(request, model, Path.Template.LOGIN);
         }
         model.put("authenticationSucceeded", true);
+
+        //user authenticated
         //set currentUserToSession
         request.session().attribute("currentUser", getQueryUsername(request));
+        AuthedUserListHolder.put(request, Application.userDao.getUserByUsername(getQueryUsername(request)));
         if (getQueryLoginRedirect(request) != null) {
             response.redirect(getQueryLoginRedirect(request));
         }
@@ -37,6 +41,7 @@ public class LoginController {
     };
 
     public static Route handleLogoutPost = (Request request, Response response) -> {
+        AuthedUserListHolder.remove(Application.userDao.getUserByUsername(request.session().attribute("currentUser")));
         request.session().removeAttribute("currentUser");
         request.session().attribute("loggedOut", true);
         response.redirect(Path.Web.LOGIN);
