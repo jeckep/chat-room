@@ -1,9 +1,5 @@
 package com.jeckep.chat.constants;
 
-/**
- * Created by jeck on 31.08.16.
- */
-
 public class Envs {
     public static final String DB_NAME = "DB_NAME";
     public static final String DB_URL = "DB_URL";

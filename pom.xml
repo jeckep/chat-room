@@ -74,6 +74,18 @@
             <version>0.7</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.sparkjava</groupId>
+            <artifactId>spark-template-velocity</artifactId>
+            <version>2.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sparkjava</groupId>
+            <artifactId>spark-debug-tools</artifactId>
+            <version>0.5</version>
+        </dependency>
+
     </dependencies>
     <build>
         <plugins>
@@ -86,7 +98,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.jeckep.chat.Chat</mainClass>
+                            <mainClass>com.jeckep.chat.Application</mainClass>
                             <classpathPrefix>dependency-jars/</classpathPrefix>
                         </manifest>
                     </archive>
@@ -117,7 +129,7 @@
                             </descriptorRefs>
                             <archive>
                                 <manifest>
-                                    <mainClass>com.jeckep.chat.Chat</mainClass>
+                                    <mainClass>com.jeckep.chat.Application</mainClass>
                                 </manifest>
                             </archive>
                         </configuration>

@@ -1,13 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>WebsSockets</title>
-    <link rel="stylesheet" href="/css/main.css">
-    <link rel="stylesheet" href="/css/chat.css">
-</head>
-<body>
-
+#parse("/velocity/layout.vm")
+#@mainLayout()
 <div id="chatbody">
     <ul id="userlist"> <!-- Built by JS --> </ul>
     <div id="chat">    <!-- Built by JS --> </div>
@@ -17,5 +9,5 @@
     </div>
     <script src="/js/websocketDemo.js"></script>
 </div>
-</body>
-</html>
+#end
+

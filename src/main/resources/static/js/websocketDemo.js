@@ -33,8 +33,8 @@ function updateChat(msg) {
 
 //Helper function for inserting HTML as the first child of an element
 function insert(targetId, message) {
-    id(targetId).insertAdjacentHTML("afterbegin", message);
-//    id(targetId).insertAdjacentHTML("beforeEnd", message);
+//    id(targetId).insertAdjacentHTML("afterbegin", message);
+    id(targetId).insertAdjacentHTML("beforeEnd", message);
 }
 
 //Helper function for selecting element by id
