@@ -30,7 +30,7 @@ public class MsgManager {
             //echo to sender
             send(senderSession, msg);
             Session receiverSession = liveSessions.get(msg.getReceiver());
-            if(receiverSession != null){
+            if(receiverSession != null && msg.getSender() != msg.getReceiver()){
                 //send to receiver
                 send(receiverSession, msg);
             }
