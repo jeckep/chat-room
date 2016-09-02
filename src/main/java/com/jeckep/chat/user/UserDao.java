@@ -31,8 +31,8 @@ public class UserDao {
 
     //TODO it can throw unique exception because of the email, take actions in controller
     public User create(String name, String surname, String email){
-        String sql = "insert into user(name, surname, email)" +
-                     "values (:name, :surname, :email)";
+        String sql = "insert into chatuser(name, surname, email)" +
+                     " values (:name, :surname, :email)";
         try (Connection con = sql2o.open()) {
             int id = (int) con.createQuery(sql)
                     .addParameter("name", name)
@@ -45,8 +45,8 @@ public class UserDao {
 
     public User getUserByEmail(String email){
         String sql = "select id, name, surname, email" +
-                     "from user" +
-                     "where email = :email";
+                     " from chatuser" +
+                     " where email = :email";
 
         try(Connection con = sql2o.open()) {
             List<User> users =  con.createQuery(sql)

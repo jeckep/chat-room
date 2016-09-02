@@ -1,4 +1,4 @@
-create table user(
+create table chatuser(
     id SERIAL primary key,
     name TEXT,
     surname TEXT,

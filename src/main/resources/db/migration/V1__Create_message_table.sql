@@ -1,7 +1,7 @@
 create table message(
     id SERIAL primary key,
-    from integer,
-    to integer,
-    message TEXT
+    sender integer,
+    receiver integer,
+    message TEXT,
     ts timestamp
 );

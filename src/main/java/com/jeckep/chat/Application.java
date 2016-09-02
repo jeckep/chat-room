@@ -6,6 +6,7 @@ import com.jeckep.chat.chatroom.ChatroomController;
 import com.jeckep.chat.env.Envs;
 import com.jeckep.chat.index.IndexController;
 import com.jeckep.chat.login.LoginController;
+import com.jeckep.chat.message.MsgDao;
 import com.jeckep.chat.user.UserDao;
 import com.jeckep.chat.util.Path;
 import lombok.extern.slf4j.Slf4j;
@@ -16,11 +17,12 @@ import static spark.Spark.*;
 @Slf4j
 public class Application {
     public static UserDao userDao;
+    public static MsgDao msgDao;
 
     public static void main(String[] args) {
         userDao = new UserDao();
-
-        //migrateDB();
+        msgDao = new MsgDao();
+        migrateDB();
 
         staticFiles.location("/static");
         staticFiles.expireTime(600);

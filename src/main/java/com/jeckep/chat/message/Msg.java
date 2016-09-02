@@ -7,14 +7,14 @@ import java.util.Date;
 @Data
 public class Msg {
     int id;
-    int from;
-    int to;
+    int sender;
+    int receiver;
     String message;
     Date ts;
 
-    public Msg(int from, int to, String message) {
-        this.from = from;
-        this.to = to;
+    public Msg(int sender, int receiver, String message) {
+        this.sender = sender;
+        this.receiver = receiver;
         this.message = message;
         this.ts = new Date();
     }
