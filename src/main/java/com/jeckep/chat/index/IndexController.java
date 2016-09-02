@@ -12,7 +12,7 @@ import java.util.Map;
 public class IndexController {
     public static Route serveIndexPage = (Request request, Response response) -> {
         Map<String, Object> model = new HashMap<>();
-        model.put("nav_active", "nav_home");
+        model.put("nav_active", "home");
         return ViewUtil.render(request, model, Path.Template.INDEX);
     };
 }
