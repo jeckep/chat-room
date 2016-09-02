@@ -12,10 +12,10 @@ public class Path {
     }
 
     public static class Template {
-        public static final String CHATROOM = "/velocity/chat/chatroom.vm";
-        public final static String INDEX = "/velocity/index/index.vm";
-        public final static String LOGIN = "/velocity/login/login.vm";
-        public static final String NOT_FOUND = "/velocity/notFound.vm";
+        public static final String CHATROOM = "/velocity/chat/chatroom.html";
+        public final static String INDEX = "/velocity/index/index.html";
+        public final static String LOGIN = "/velocity/login/login.html";
+        public static final String NOT_FOUND = "/velocity/notFound.html";
     }
 
 }

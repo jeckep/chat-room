@@ -17,6 +17,7 @@ public class ChatroomController {
         LoginController.ensureUserIsLoggedIn(request, response);
         Map<String, Object> model = new HashMap<>();
         model.put("users", Application.userDao.getAllUsers());
+        model.put("nav_active", "nav_chatroom");
 //        model.put("toUserId", request.params("id"));
         return ViewUtil.render(request, model, Path.Template.CHATROOM);
     };
