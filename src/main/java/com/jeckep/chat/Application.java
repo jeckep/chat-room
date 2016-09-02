@@ -8,6 +8,7 @@ import com.jeckep.chat.index.IndexController;
 import com.jeckep.chat.login.LoginController;
 import com.jeckep.chat.message.MsgDao;
 import com.jeckep.chat.user.UserDao;
+import com.jeckep.chat.util.Filters;
 import com.jeckep.chat.util.Path;
 import lombok.extern.slf4j.Slf4j;
 import org.flywaydb.core.Flyway;
@@ -30,7 +31,7 @@ public class Application {
         init();
 
 //        enableDebugScreen();
-
+        before("*",                  Filters.handleLocaleChange);
 
         get(Path.Web.CHAT_ROOM + "/:id",      ChatroomController.serveChatPage);
         get(Path.Web.INDEX,          IndexController.serveIndexPage);
@@ -38,6 +39,9 @@ public class Application {
         post(Path.Web.LOGIN,         LoginController.handleLoginPost);
         post(Path.Web.LOGOUT,        LoginController.handleLogoutPost);
 //        get("*",                     ViewUtil.notFound);
+
+        //Set up after-filters (called after each get/post)
+        after("*",                   Filters.addGzipHeader);
 
         exception(Exception.class, (exception, request, response) -> {
             log.error("Unhandled exception",exception);

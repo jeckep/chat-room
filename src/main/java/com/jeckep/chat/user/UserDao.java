@@ -15,9 +15,9 @@ public class UserDao {
     }
 
     private final List<User> users = ImmutableList.of(
-            new User(1, "user1"),
-            new User(2, "user2"),
-            new User(3, "user3")
+            new User(1, "user1", "user1@gmail.com"),
+            new User(2, "user2", "user2@gmail.com"),
+            new User(3, "user3", "user3@gmail.com")
     );
 
     public User getUserByUsername(String username) {

@@ -1,5 +1,7 @@
 package com.jeckep.chat.util;
 
+import com.jeckep.chat.util.bundle.UTF8Control;
+
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -10,7 +12,7 @@ public class MessageBundle {
 
     public MessageBundle(String languageTag) {
         Locale locale = languageTag != null ? new Locale(languageTag) : Locale.ENGLISH;
-        this.messages = ResourceBundle.getBundle("localization/messages", locale);
+        this.messages = ResourceBundle.getBundle("localization/messages", locale, new UTF8Control());
     }
 
     public String get(String message) {
