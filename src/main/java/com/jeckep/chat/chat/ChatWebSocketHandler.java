@@ -1,6 +1,5 @@
 package com.jeckep.chat.chat;
 
-import com.jeckep.chat.Application;
 import com.jeckep.chat.login.AuthedUserListHolder;
 import com.jeckep.chat.message.Msg;
 import com.jeckep.chat.user.User;
@@ -11,42 +10,53 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
-import javax.servlet.http.Cookie;
+import java.io.IOException;
 import java.net.HttpCookie;
-import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @WebSocket
 public class ChatWebSocketHandler {
+    public static Map<Integer, Session> liveSessions = new HashMap<>();
 
     @OnWebSocketConnect
     public void onConnect(Session session) throws Exception {
-        String username = "User" + Application.nextUserNumber++;
-        User user = AuthedUserListHolder.getByJsessionid(getJsessionid(session));
-        log.info("User '" + user.getUsername() + "' is connected to chat websocket.");
-        Application.userUsernameMap.put(session, username);
-        Application.sendMessageHistoryToNewUser(session);
-        Application.broadcastMessage(new Msg("Server", 0,0, username + " joined the chat", new Date()));
+        User user = resolveUser(session);
+        liveSessions.put(user.getId(), session);
+        //TODO process status changed to user with whom currentUser can talk
+        log.info("User '" + user.getId() + "' is connected to chat websocket.");
     }
 
     @OnWebSocketClose
-    public void onClose(Session user, int statusCode, String reason) {
-        String username = Application.userUsernameMap.get(user);
-        Application.userUsernameMap.remove(user);
-        Application.broadcastMessage(new Msg("Server",0,0, username + " left the chat", new Date()));
+    public void onClose(Session session, int statusCode, String reason) {
+        User user = resolveUser(session);
+        liveSessions.remove(user.getId());
+        //TODO process status changed to user with whom currentUser was talking
+        log.info("User '" + user.getId() + "' is disconnected from chat websocket.");
     }
 
     @OnWebSocketMessage
-    public void onMessage(Session session, String message) {
-        // get current user from session
-        // get toUser from session?
-        // save message to db
-        // send message to toUser if they are online
-        // url for chat for user(id:1) talking to user(id:2) /chatroom/2
-        Application.broadcastMessage(new Msg(Application.userUsernameMap.get(session),0,0,message, new Date()));
+    public void onMessage(Session session, String json) {
+        try {
+            WSMsg msg = MsgManager.parse(json);
+            User sender = resolveUser(session);
+            log.info("Message from user:" + sender.getId() + " to user: " + msg.getTo() + " received and parsed.");
+            MsgManager.process(new Msg(sender.getId(), msg.getTo(), msg.getMessage()), session);
+        } catch (IOException e) {
+            log.error("Cannot parse web socket json message", e);
+        }
     }
 
-    private String getJsessionid(Session session){
+    public static User resolveUser(Session session){
+        String jsessionid = getJsessionid(session);
+        if (jsessionid == null){
+            return null;
+        }
+        return AuthedUserListHolder.getByJsessionid(jsessionid);
+    }
+
+    private static String getJsessionid(Session session){
         for(HttpCookie cookie: session.getUpgradeRequest().getCookies()){
             if("JSESSIONID".equals(cookie.getName())){
                 return cookie.getValue();
