@@ -1,7 +1,11 @@
 #parse("/velocity/layout.vm")
 #@mainLayout()
 <div id="chatbody">
-    <ul id="userlist"> <!-- Built by JS --> </ul>
+    <ul id="userlist">
+    #foreach($user in $users)
+        <li><a href="/chatroom/$user.getId()">$user.getName()</a></li>
+    #end
+    </ul>
     <div id="chat">    <!-- Built by JS --> </div>
     <div id="chatControls">
         <input id="message" placeholder="Type your message">

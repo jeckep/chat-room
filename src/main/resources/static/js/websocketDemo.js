@@ -2,7 +2,9 @@
 var webSocket = new WebSocket("ws://" + location.hostname + ":" + location.port + "/chat/");
 webSocket.onmessage = function (msg) { updateChat(msg); };
 webSocket.onclose = function () {
-    window.location.reload(true);
+// This some times causes problems if user click links, if this executes before redirect
+// TODO fix it
+//    window.location.reload(true);
 };
 
 //Send message to load old messages
@@ -19,6 +21,8 @@ id("send").addEventListener("click", function () {
 id("message").addEventListener("keypress", function (e) {
     if (e.keyCode === 13) { sendMessage(e.target.value); }
 });
+
+
 
 //Send a message if it's not empty, then clear the input field
 function sendMessage(message) {
@@ -37,10 +41,6 @@ function sendMessage(message) {
 function updateChat(msg) {
     var data = JSON.parse(msg.data);
     insert("chat", data.userMessage);
-    id("userlist").innerHTML = "";
-    data.userlist.forEach(function (user) {
-        insert("userlist", "<li>" + user + "</li>");
-    });
 }
 
 //Helper function for inserting HTML as the first child of an element

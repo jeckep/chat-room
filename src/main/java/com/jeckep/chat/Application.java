@@ -3,7 +3,7 @@ package com.jeckep.chat;
 
 import com.jeckep.chat.chat.ChatWebSocketHandler;
 import com.jeckep.chat.chatroom.ChatroomController;
-import com.jeckep.chat.constants.Envs;
+import com.jeckep.chat.env.Envs;
 import com.jeckep.chat.index.IndexController;
 import com.jeckep.chat.login.LoginController;
 import com.jeckep.chat.user.UserDao;
@@ -16,8 +16,6 @@ import static spark.Spark.*;
 @Slf4j
 public class Application {
     public static UserDao userDao;
-
-    private static final String DB_URL = System.getenv(Envs.DB_URL);
 
     public static void main(String[] args) {
         userDao = new UserDao();
@@ -42,13 +40,11 @@ public class Application {
         exception(Exception.class, (exception, request, response) -> {
             log.error("Unhandled exception",exception);
         });
-
-
     }
 
     private static void migrateDB(){
         Flyway flyway = new Flyway();
-        flyway.setDataSource(DB_URL, System.getenv(Envs.DB_USER), System.getenv(Envs.DB_PASSWORD));
+        flyway.setDataSource(Envs.DB_URL, Envs.DB_USER, Envs.DB_PASSWORD);
         flyway.migrate();
     }
 }

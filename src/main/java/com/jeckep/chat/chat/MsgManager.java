@@ -16,18 +16,17 @@ import static j2html.TagCreator.*;
 
 @Slf4j
 public class MsgManager {
-    public static final String COMMAND_LOAD_OLD = "LOAD_OLD_MESSAGES";
-
-    public static List<Msg> messageHistory = new ArrayList<>();
+    private static final String COMMAND_LOAD_OLD = "LOAD_OLD_MESSAGES";
+    private static List<Msg> messageHistory = new ArrayList<>();
 
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    public static WSMsg parse(String json) throws IOException {
+    static WSMsg parse(String json) throws IOException {
        return mapper.readValue(json, WSMsg.class);
     }
 
-    public static void process(Msg msg, Session senderSession){
+    static void process(Msg msg, Session senderSession){
         if(COMMAND_LOAD_OLD.equals(msg.getMessage())){
             sendOldMessagesToLiveAgainUser(msg.getFrom(), msg.getTo(), senderSession);
         }else{
@@ -42,33 +41,25 @@ public class MsgManager {
         }
     }
 
-    private static void send(Session session, Msg msg){
-        try {
-            session.getRemote().sendString(String.valueOf(new JSONObject()
-                    .put("userMessage", createHtmlMessageFromSender(msg))
-                    .put("userlist", liveSessions.keySet())
-            ));
-        } catch (Exception e) {
-            log.error("Cannot process message from user:" + msg.getFrom() + " to user: " + msg.getTo(), e);
-        }
-    }
-
     private static void sendOldMessagesToLiveAgainUser(int userFrom, int userTo, Session session) {
         messageHistory.stream()
                 .filter(msg ->
                         (msg.getTo() == userTo && msg.getFrom() == userFrom)
-                        || (msg.getTo() == userFrom && msg.getFrom() == userTo))
+                                || (msg.getTo() == userFrom && msg.getFrom() == userTo))
                 .sorted((a,b) -> a.getTs().compareTo(b.getTs()))
                 .forEach( message -> {
-                    try {
-                        session.getRemote().sendString(String.valueOf(new JSONObject()
-                                .put("userMessage", createHtmlMessageFromSender(message))
-                                .put("userlist", liveSessions.keySet())
-                        ));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    send(session,message);
                 });
+    }
+
+    private static void send(Session session, Msg msg){
+        try {
+            session.getRemote().sendString(String.valueOf(new JSONObject()
+                    .put("userMessage", createHtmlMessageFromSender(msg))
+            ));
+        } catch (Exception e) {
+            log.error("Cannot process message from user:" + msg.getFrom() + " to user: " + msg.getTo(), e);
+        }
     }
 
     //Builds a HTML element with a sender-name, a message, and a timestamp,

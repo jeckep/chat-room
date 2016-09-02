@@ -11,15 +11,15 @@ public class User {
     String surname;
     String email;
 
-    //temp
-    String username;
-    String salt;
-    String hashedPassword;
 
-    public User(int id, String username, String salt, String hashedPassword) {
+    public User(String name, String surname, String email) {
+        this.name = name;
+        this.surname = surname;
+        this.email = email;
+    }
+
+    public User(int id, String name) {
         this.id = id;
-        this.username = username;
-        this.salt = salt;
-        this.hashedPassword = hashedPassword;
+        this.name = name;
     }
 }
