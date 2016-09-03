@@ -14,37 +14,46 @@ public class UserDao {
         sql2o = new Sql2o(Envs.DB_URL, Envs.DB_USER, Envs.DB_PASSWORD);
     }
 
-    private final List<User> users = ImmutableList.of(
-            new User(1, "user1", "user1@gmail.com"),
-            new User(2, "user2", "user2@gmail.com"),
-            new User(3, "user3", "user3@gmail.com")
-    );
-
-    public User getUserByUsername(String username) {
-        return users.stream().filter(b -> b.getName().equals(username)).findFirst().orElse(null);
-    }
-
-
     public List<User> getAllUsers(){
-        return users;
-    }
+        String sql = "select id, name, surname, email, picture" +
+                " from chatuser";
 
-    //TODO it can throw unique exception because of the email, take actions in controller
-    public User create(String name, String surname, String email){
-        String sql = "insert into chatuser(name, surname, email)" +
-                     " values (:name, :surname, :email)";
-        try (Connection con = sql2o.open()) {
-            int id = (int) con.createQuery(sql)
-                    .addParameter("name", name)
-                    .addParameter("surname",surname)
-                    .addParameter("email", email)
-                    .executeUpdate().getKey();
-            return new User(id, name, surname, email);
+        try(Connection con = sql2o.open()) {
+            return con.createQuery(sql).executeAndFetch(User.class);
+
         }
     }
 
-    public User getUserByEmail(String email){
-        String sql = "select id, name, surname, email" +
+    public User findOrCreate(IUser user){
+        User foundUser = findByEmail(user.getEmail());
+        if(foundUser == null){
+            return create(user);
+        }else{
+            return foundUser;
+        }
+    }
+
+    public User create(IUser user){
+        return create(user.getName(), user.getSurname(), user.getEmail(), user.getPicture());
+    }
+
+    //TODO it can throw unique exception because of the email, take actions in controller
+    public User create(String name, String surname, String email, String picture){
+        String sql = "insert into chatuser(name, surname, email, picture)" +
+                     " values (:name, :surname, :email, :picture)";
+        try (Connection con = sql2o.open()) {
+            con.createQuery(sql)
+                    .addParameter("name", name)
+                    .addParameter("surname",surname)
+                    .addParameter("email", email)
+                    .addParameter("picture", picture)
+                    .executeUpdate();
+        }
+        return findByEmail(email);
+    }
+
+    public User findByEmail(String email){
+        String sql = "select id, name, surname, email, picture" +
                      " from chatuser" +
                      " where email = :email";
 

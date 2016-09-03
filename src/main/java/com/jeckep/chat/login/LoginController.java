@@ -1,9 +1,13 @@
 package com.jeckep.chat.login;
 
+import com.github.scribejava.core.oauth.OAuth20Service;
 import com.jeckep.chat.Application;
-import com.jeckep.chat.user.*;
-import com.jeckep.chat.util.*;
+import com.jeckep.chat.login.service.OAuth;
+import com.jeckep.chat.user.IUser;
+import com.jeckep.chat.user.User;
 import com.jeckep.chat.util.Path;
+import com.jeckep.chat.util.ViewUtil;
+import lombok.extern.slf4j.Slf4j;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -13,6 +17,7 @@ import java.util.Map;
 
 import static com.jeckep.chat.util.RequestUtil.*;
 
+@Slf4j
 public class LoginController {
 
     public static Route serveLoginPage = (Request request, Response response) -> {
@@ -22,30 +27,35 @@ public class LoginController {
         return ViewUtil.render(request, model, Path.Template.LOGIN);
     };
 
-    public static Route handleLoginPost = (Request request, Response response) -> {
-        Map<String, Object> model = new HashMap<>();
-        if (!UserController.authenticate(getQueryUsername(request), getQueryPassword(request))) {
-            model.put("authenticationFailed", true);
-            return ViewUtil.render(request, model, Path.Template.LOGIN);
-        }
-        model.put("authenticationSucceeded", true);
+    public static Route handleLogout = (Request request, Response response) -> {
+        AuthedUserListHolder.remove(request.session().attribute("currentUser"));
+        request.session().removeAttribute("currentUser");
+        request.session().attribute("loggedOut", true);
+        response.redirect(Path.Web.INDEX);
+        return null;
+    };
+
+    public static Route handleLoginGoogle = (Request request, Response response) -> {
+        final OAuth20Service service = OAuth.Google.service();
+        String url = service.getAuthorizationUrl();
+        response.redirect(url);
+        return null;
+    };
+
+    public static Route handleCallbackGoogle = (Request request, Response response) -> {
+        final Map<String, Object> model = new HashMap<>();
+        final String code = request.queryParams("code");
+        final IUser iuser = OAuth.Google.retriveInfo(code);
+        final User user = Application.userDao.findOrCreate(iuser);
 
         //user authenticated
         //set currentUserToSession
-        request.session().attribute("currentUser", getQueryUsername(request));
-        AuthedUserListHolder.put(request, Application.userDao.getUserByUsername(getQueryUsername(request)));
+        request.session().attribute("currentUser", user);
+        AuthedUserListHolder.put(request, user);
         if (getQueryLoginRedirect(request) != null) {
             response.redirect(getQueryLoginRedirect(request));
         }
         return ViewUtil.render(request, model, Path.Template.LOGIN);
-    };
-
-    public static Route handleLogoutPost = (Request request, Response response) -> {
-        AuthedUserListHolder.remove(Application.userDao.getUserByUsername(request.session().attribute("currentUser")));
-        request.session().removeAttribute("currentUser");
-        request.session().attribute("loggedOut", true);
-        response.redirect(Path.Web.LOGIN);
-        return null;
     };
 
     // The origin of the request (request.pathInfo()) is saved in the session so
@@ -55,6 +65,5 @@ public class LoginController {
             request.session().attribute("loginRedirect", request.pathInfo());
             response.redirect(Path.Web.LOGIN);
         }
-    };
-
+    }
 }

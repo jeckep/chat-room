@@ -36,8 +36,9 @@ public class Application {
         get(Path.Web.CHAT_ROOM + "/:id",      ChatroomController.serveChatPage);
         get(Path.Web.INDEX,          IndexController.serveIndexPage);
         get(Path.Web.LOGIN,          LoginController.serveLoginPage);
-        post(Path.Web.LOGIN,         LoginController.handleLoginPost);
-        get(Path.Web.LOGOUT,        LoginController.handleLogoutPost);
+        get(Path.Web.LOGOUT,        LoginController.handleLogout);
+        get(Path.Web.LOGIN_GOOGLE,        LoginController.handleLoginGoogle);
+        get(Path.Web.GOOGLE_OAUTH2_CALLBACK,        LoginController.handleCallbackGoogle);
 //        get("*",                     ViewUtil.notFound);
 
         //Set up after-filters (called after each get/post)

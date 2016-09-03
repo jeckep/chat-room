@@ -5,11 +5,12 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class User {
+public class User implements IUser{
     int id;
     String name;
     String surname;
     String email;
+    String picture;
 
 
     public User(String name, String surname, String email) {

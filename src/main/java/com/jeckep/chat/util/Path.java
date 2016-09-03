@@ -7,7 +7,9 @@ public class Path {
     public static class Web {
         @Getter public static final String INDEX = "/";
         @Getter public static final String LOGIN = "/login/";
+        @Getter public static final String LOGIN_GOOGLE = "/login/google/";
         @Getter public static final String LOGOUT = "/logout/";
+        @Getter public static final String GOOGLE_OAUTH2_CALLBACK = "/oauth2callback/google/";
         @Getter public static final String CHAT_ROOM = "/chatroom/";
     }
 

@@ -1,5 +1,6 @@
 package com.jeckep.chat.util;
 
+import com.jeckep.chat.user.User;
 import spark.Request;
 
 import javax.servlet.http.Cookie;
@@ -10,14 +11,6 @@ public class RequestUtil {
         return request.queryParams("locale");
     }
 
-    public static String getQueryUsername(Request request) {
-        return request.queryParams("username");
-    }
-
-    public static String getQueryPassword(Request request) {
-        return request.queryParams("password");
-    }
-
     public static String getQueryLoginRedirect(Request request) {
         return request.queryParams("loginRedirect");
     }
@@ -26,7 +19,7 @@ public class RequestUtil {
         return request.session().attribute("locale");
     }
 
-    public static String getSessionCurrentUser(Request request) {
+    public static User getSessionCurrentUser(Request request) {
         return request.session().attribute("currentUser");
     }
 
@@ -50,5 +43,4 @@ public class RequestUtil {
         }
         return null;
     }
-
 }
