@@ -37,10 +37,8 @@ public class Application {
         get(Path.Web.INDEX,          IndexController.serveIndexPage);
         get(Path.Web.LOGIN,          LoginController.serveLoginPage);
         get(Path.Web.LOGOUT,        LoginController.handleLogout);
-        get(Path.Web.LOGIN_GOOGLE,        LoginController.handleLoginGoogle);
-        get(Path.Web.LOGIN_VK,        LoginController.handleLoginVK);
-        get(Path.Web.GOOGLE_OAUTH2_CALLBACK,        LoginController.handleCallbackGoogle);
-        get(Path.Web.VK_OAUTH2_CALLBACK,        LoginController.handleCallbackVK);
+        get(Path.Web.LOGIN_AUTH2,        LoginController.handleLoginOAuth2);
+        get(Path.Web.OAUTH2_CALLBACK,        LoginController.handleCallbackOAuth2);
 //        get("*",                     ViewUtil.notFound);
 
         //Set up after-filters (called after each get/post)

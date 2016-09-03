@@ -1,8 +1,7 @@
 package com.jeckep.chat.login;
 
-import com.github.scribejava.core.oauth.OAuth20Service;
 import com.jeckep.chat.Application;
-import com.jeckep.chat.login.service.OAuth;
+import com.jeckep.chat.login.oauth.OAuth;
 import com.jeckep.chat.user.IUser;
 import com.jeckep.chat.user.User;
 import com.jeckep.chat.util.Path;
@@ -35,40 +34,16 @@ public class LoginController {
         return null;
     };
 
-    public static Route handleLoginGoogle = (Request request, Response response) -> {
-        final OAuth20Service service = OAuth.Google.service();
-        String url = service.getAuthorizationUrl();
+    public static Route handleLoginOAuth2 = (Request request, Response response) -> {
+        final String url = OAuth.getAuthorizationUrl(request.params("service"));
         response.redirect(url);
         return null;
     };
 
-    public static Route handleLoginVK = (Request request, Response response) -> {
-        final OAuth20Service service = OAuth.VK.service();
-        String url = service.getAuthorizationUrl();
-        response.redirect(url);
-        return null;
-    };
-
-    public static Route handleCallbackGoogle = (Request request, Response response) -> {
+    public static Route handleCallbackOAuth2 = (Request request, Response response) -> {
         final Map<String, Object> model = new HashMap<>();
         final String code = request.queryParams("code");
-        final IUser iuser = OAuth.Google.retriveInfo(code);
-        final User user = Application.userDao.findOrCreate(iuser);
-
-        //user authenticated
-        //set currentUserToSession
-        request.session().attribute("currentUser", user);
-        AuthedUserListHolder.put(request, user);
-        if (getQueryLoginRedirect(request) != null) {
-            response.redirect(getQueryLoginRedirect(request));
-        }
-        return ViewUtil.render(request, model, Path.Template.LOGIN);
-    };
-
-    public static Route handleCallbackVK = (Request request, Response response) -> {
-        final Map<String, Object> model = new HashMap<>();
-        final String code = request.queryParams("code");
-        final IUser iuser = OAuth.VK.retriveInfo(code);
+        final IUser iuser = OAuth.service(request.params("service")).retriveInfo(code);
         final User user = Application.userDao.findOrCreate(iuser);
 
         //user authenticated

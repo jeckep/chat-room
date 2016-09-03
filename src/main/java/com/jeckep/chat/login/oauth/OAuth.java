@@ -1,6 +1,7 @@
-package com.jeckep.chat.login.service;
+package com.jeckep.chat.login.oauth;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.scribejava.apis.GoogleApi20;
 import com.github.scribejava.apis.VkontakteApi;
@@ -10,7 +11,6 @@ import com.github.scribejava.core.model.OAuthRequest;
 import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import com.jeckep.chat.env.Envs;
-import com.jeckep.chat.login.GoogleUser;
 import com.jeckep.chat.user.IUser;
 import com.jeckep.chat.user.User;
 import lombok.Data;
@@ -18,22 +18,41 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class OAuth {
-    public static class Google {
-        public static final String REQUEST_URL = "https://www.googleapis.com/userinfo/v2/me";
+    private static Map<String, Service> services = new HashMap<>();
+    static {
+        services.put(VK.serviceCode, new VK());
+        services.put(Google.serviceCode, new Google());
+    }
+
+    public static Service service(String service){
+        return services.get(service);
+    }
+
+    public interface Service {
+        OAuth20Service service();
+        IUser retriveInfo(String authCode) throws IOException, JSONException;
+    }
+
+    private static class Google implements Service {
+        private static final String serviceCode = "google";
+        private static final String REQUEST_URL = "https://www.googleapis.com/userinfo/v2/me";
+
         private static final OAuth20Service service = new ServiceBuilder()
                 .apiKey(Envs.GOOGLE_API_KEY)
                 .apiSecret(Envs.GOOGLE_API_SECRET)
-                .callback("http://localhost:4567/oauth2callback/google/")
+                .callback(callbackURL(serviceCode))
                 .scope("email profile")
                 .build(GoogleApi20.instance());
 
-        public static OAuth20Service service(){
+        public  OAuth20Service service(){
             return service;
         }
 
-        public static IUser retriveInfo(String authCode) throws IOException {
+        public  IUser retriveInfo(String authCode) throws IOException {
             OAuth2AccessToken accessToken =  service.getAccessToken(authCode);
             final OAuthRequest req = new OAuthRequest(Verb.GET, OAuth.Google.REQUEST_URL, service);
             service.signRequest(accessToken,req);
@@ -42,23 +61,33 @@ public class OAuth {
             return gu;
         }
 
+        @Data
+        @JsonIgnoreProperties(ignoreUnknown = true)
+        private static class GoogleUser implements IUser {
+            @JsonProperty("family_name") String surname;
+            @JsonProperty("given_name") String name;
+            String picture;
+            String email;
+        }
+
     }
 
-    public static class VK {
-        public static final String REQUEST_URL = "https://api.vk.com/method/users.get";
+    private static class VK implements Service{
+        private static final String serviceCode = "vk";
+        private static final String REQUEST_URL = "https://api.vk.com/method/users.get";
         private static final OAuth20Service service = new ServiceBuilder()
                 .apiKey(Envs.VK_API_KEY)
                 .apiSecret(Envs.VK_API_SECRET)
-                .callback("http://localhost:4567/oauth2callback/vk/")
+                .callback(callbackURL(serviceCode))
                 .scope("email profile")
                 .build(VkontakteApi.instance());
 
 
-        public static OAuth20Service service(){
+        public OAuth20Service service(){
             return service;
         }
 
-        public static IUser retriveInfo(String authCode) throws IOException, JSONException {
+        public IUser retriveInfo(String authCode) throws IOException, JSONException {
             final OAuth2AccessToken accessToken =  service.getAccessToken(authCode);
             final VkAccessTokenResponse resp = new ObjectMapper().readValue(accessToken.getRawResponse(), VkAccessTokenResponse.class);
             final OAuthRequest req = new OAuthRequest(Verb.GET, REQUEST_URL, service);
@@ -75,12 +104,21 @@ public class OAuth {
 
             return new User(name, surname, email, picture);
         }
+
+        @Data
+        @JsonIgnoreProperties(ignoreUnknown = true)
+        private static class VkAccessTokenResponse {
+            String user_id;
+            String email;
+        }
     }
 
-    @Data
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class VkAccessTokenResponse {
-        String user_id;
-        String email;
+    public static String getAuthorizationUrl(String serviceCode){
+        final OAuth20Service service = OAuth.service(serviceCode).service();
+        return service.getAuthorizationUrl();
+    }
+
+    private static String callbackURL(String service){
+        return "http://" + Envs.HOSTNAME + "/oauth2callback/" + service + "/";
     }
 }

@@ -26,7 +26,7 @@ public class AuthedUserListHolder {
         }else{
             log.warn("JSESSIONID not found in cookies");
         }
-        log.info("User " + user.getId() + " with JSESSIONID=" + jsessionid + " added.");
+        log.info("User " + user.getId() + " added.");
     }
 
     static void remove(User user){
@@ -37,7 +37,7 @@ public class AuthedUserListHolder {
         }else{
             log.warn("User " + user.getId() + " already removed");
         }
-        log.info("User " + user.getId() + " with JSESSIONID=" + jsessionid + " removed.");
+        log.info("User " + user.getId() + " removed.");
     }
 
     public static User getByJsessionid(String jsessionid){
