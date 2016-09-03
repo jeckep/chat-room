@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.scribejava.apis.GoogleApi20;
+import com.github.scribejava.apis.LinkedInApi20;
 import com.github.scribejava.apis.VkontakteApi;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.OAuth2AccessToken;
@@ -26,6 +27,7 @@ public class OAuth {
     static {
         services.put(VK.serviceCode, new VK());
         services.put(Google.serviceCode, new Google());
+        services.put(Linkedin.serviceCode, new Linkedin());
     }
 
     public static Service service(String service){
@@ -54,7 +56,7 @@ public class OAuth {
 
         public  IUser retriveInfo(String authCode) throws IOException {
             OAuth2AccessToken accessToken =  service.getAccessToken(authCode);
-            final OAuthRequest req = new OAuthRequest(Verb.GET, OAuth.Google.REQUEST_URL, service);
+            final OAuthRequest req = new OAuthRequest(Verb.GET, REQUEST_URL, service);
             service.signRequest(accessToken,req);
             final com.github.scribejava.core.model.Response res =  req.send();
             GoogleUser gu = new ObjectMapper().readValue(res.getBody(), GoogleUser.class);
@@ -110,6 +112,40 @@ public class OAuth {
         private static class VkAccessTokenResponse {
             String user_id;
             String email;
+        }
+    }
+
+    private static class Linkedin implements Service {
+        private static final String serviceCode = "linkedin";
+        private static final String REQUEST_URL = "https://api.linkedin.com/v1/people/~:(id,picture-url,first-name,last-name,email-address)";
+
+        private static final OAuth20Service service = new ServiceBuilder()
+                .apiKey(Envs.LD_API_KEY)
+                .apiSecret(Envs.LD_API_SECRET)
+                .callback(callbackURL(serviceCode))
+                .build(LinkedInApi20.instance());
+
+        public  OAuth20Service service(){
+            return service;
+        }
+
+        public  IUser retriveInfo(String authCode) throws IOException {
+            OAuth2AccessToken accessToken =  service.getAccessToken(authCode);
+            final OAuthRequest req = new OAuthRequest(Verb.GET, REQUEST_URL, service);
+            req.addQuerystringParameter("format", "json");
+            service.signRequest(accessToken,req);
+            final com.github.scribejava.core.model.Response res =  req.send();
+            LDUser ldUser = new ObjectMapper().readValue(res.getBody(), LDUser.class);
+            return ldUser;
+        }
+
+        @Data
+        @JsonIgnoreProperties(ignoreUnknown = true)
+        private static class LDUser implements IUser {
+            @JsonProperty("lastName") String surname;
+            @JsonProperty("firstName") String name;
+            @JsonProperty("pictureUrl") String picture;
+            @JsonProperty("emailAddress") String email;
         }
     }
 

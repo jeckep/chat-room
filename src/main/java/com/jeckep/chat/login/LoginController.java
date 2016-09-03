@@ -43,6 +43,12 @@ public class LoginController {
     public static Route handleCallbackOAuth2 = (Request request, Response response) -> {
         final Map<String, Object> model = new HashMap<>();
         final String code = request.queryParams("code");
+        if(code == null){
+            //There are two options: user refused to grant permissions or we made incorrect auth request
+            // TODO handle second option
+            response.redirect(Path.Web.LOGIN);
+            return null;
+        }
         final IUser iuser = OAuth.service(request.params("service")).retriveInfo(code);
         final User user = Application.userDao.findOrCreate(iuser);
 
