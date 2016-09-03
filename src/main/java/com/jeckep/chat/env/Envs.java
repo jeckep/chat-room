@@ -9,4 +9,7 @@ public class Envs {
 
     public static final String GOOGLE_API_KEY = System.getenv("GOOGLE_API_KEY");
     public static final String GOOGLE_API_SECRET = System.getenv("GOOGLE_API_SECRET");
+
+    public static final String VK_API_KEY = System.getenv("VK_API_KEY");
+    public static final String VK_API_SECRET = System.getenv("VK_API_SECRET");
 }

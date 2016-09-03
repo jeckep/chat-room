@@ -42,10 +42,33 @@ public class LoginController {
         return null;
     };
 
+    public static Route handleLoginVK = (Request request, Response response) -> {
+        final OAuth20Service service = OAuth.VK.service();
+        String url = service.getAuthorizationUrl();
+        response.redirect(url);
+        return null;
+    };
+
     public static Route handleCallbackGoogle = (Request request, Response response) -> {
         final Map<String, Object> model = new HashMap<>();
         final String code = request.queryParams("code");
         final IUser iuser = OAuth.Google.retriveInfo(code);
+        final User user = Application.userDao.findOrCreate(iuser);
+
+        //user authenticated
+        //set currentUserToSession
+        request.session().attribute("currentUser", user);
+        AuthedUserListHolder.put(request, user);
+        if (getQueryLoginRedirect(request) != null) {
+            response.redirect(getQueryLoginRedirect(request));
+        }
+        return ViewUtil.render(request, model, Path.Template.LOGIN);
+    };
+
+    public static Route handleCallbackVK = (Request request, Response response) -> {
+        final Map<String, Object> model = new HashMap<>();
+        final String code = request.queryParams("code");
+        final IUser iuser = OAuth.VK.retriveInfo(code);
         final User user = Application.userDao.findOrCreate(iuser);
 
         //user authenticated

@@ -13,10 +13,11 @@ public class User implements IUser{
     String picture;
 
 
-    public User(String name, String surname, String email) {
+    public User(String name, String surname, String email, String picture) {
         this.name = name;
         this.surname = surname;
         this.email = email;
+        this.picture = picture;
     }
 
     public User(int id, String name, String email) {

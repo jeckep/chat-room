@@ -52,7 +52,7 @@ public class MsgManager {
                     .put("userMessage", createHtmlMessageFromSender(msg))
             ));
         } catch (Exception e) {
-            log.error("Cannot process message sender user:" + msg.getSender() + " to user: " + msg.getReceiver(), e);
+            log.error("Cannot process message from user:" + msg.getSender() + " to user: " + msg.getReceiver(), e);
         }
     }
 
