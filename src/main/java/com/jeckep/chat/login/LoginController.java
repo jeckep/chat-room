@@ -14,15 +14,13 @@ import spark.Route;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.jeckep.chat.util.RequestUtil.*;
+import static com.jeckep.chat.util.RequestUtil.getQueryLoginRedirect;
 
 @Slf4j
 public class LoginController {
 
     public static Route serveLoginPage = (Request request, Response response) -> {
         Map<String, Object> model = new HashMap<>();
-        model.put("loggedOut", removeSessionAttrLoggedOut(request));
-        model.put("loginRedirect", removeSessionAttrLoginRedirect(request));
         return ViewUtil.render(request, model, Path.Template.LOGIN);
     };
 
@@ -57,7 +55,14 @@ public class LoginController {
         if (getQueryLoginRedirect(request) != null) {
             response.redirect(getQueryLoginRedirect(request));
         }
-        return ViewUtil.render(request, model, Path.Template.LOGIN);
+
+        String redirectUrl = request.session().attribute("loginRedirect");
+        if(redirectUrl != null){
+            response.redirect(redirectUrl);
+            request.session().removeAttribute("loginRedirect");
+            return null;
+        }
+        return ViewUtil.render(request, model, Path.Template.INDEX);
     };
 
     // The origin of the request (request.pathInfo()) is saved in the session so

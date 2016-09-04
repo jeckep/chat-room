@@ -3,8 +3,6 @@ package com.jeckep.chat.util;
 import com.jeckep.chat.user.User;
 import spark.Request;
 
-import javax.servlet.http.Cookie;
-
 public class RequestUtil {
 
     public static String getQueryLocale(Request request) {
@@ -23,24 +21,4 @@ public class RequestUtil {
         return request.session().attribute("currentUser");
     }
 
-    public static boolean removeSessionAttrLoggedOut(Request request) {
-        Object loggedOut = request.session().attribute("loggedOut");
-        request.session().removeAttribute("loggedOut");
-        return loggedOut != null;
-    }
-
-    public static String removeSessionAttrLoginRedirect(Request request) {
-        String loginRedirect = request.session().attribute("loginRedirect");
-        request.session().removeAttribute("loginRedirect");
-        return loginRedirect;
-    }
-
-    public static String getJsessionid(Request request){
-        for(Cookie cookie: request.raw().getCookies()){
-            if("JSESSIONID".equals(cookie.getName())){
-                return cookie.getValue();
-            }
-        }
-        return null;
-    }
 }

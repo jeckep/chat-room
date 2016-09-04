@@ -1,12 +1,14 @@
-package com.jeckep.chat.session.redis;
+package com.jeckep.chat.session.persist;
 
-import com.jeckep.chat.session.persist.Persister;
 import lombok.extern.slf4j.Slf4j;
 import redis.clients.jedis.Jedis;
+import spark.Session;
 
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.jeckep.chat.session.persist.PSF.COOKIE_NAME;
 
 @Slf4j
 public class JedisSimplePersister implements Persister {
@@ -16,6 +18,7 @@ public class JedisSimplePersister implements Persister {
         this.jedis = jedis;
     }
 
+    // we should restore session from redis every time, if we have more than one app node and load balancer
     @Override
     public Map<String, Object> restore(String sessionCookieValue, int expire) {
         if(jedis.exists(sessionCookieValue.getBytes())){
@@ -34,11 +37,22 @@ public class JedisSimplePersister implements Persister {
     }
 
     @Override
-    public void save(String sessionCookieValue, Map<String, Object> sessionAttrs, int expire) {
+    // save redis only if session object was changed
+    public void save(String sessionCookieValue, Session session, int expire) {
         try {
-            byte[] value = convertToBytes(sessionAttrs);
-            jedis.set(sessionCookieValue.getBytes(), value);
-            jedis.expire(sessionCookieValue.getBytes(), expire);
+            if(session.attribute(SessionChangedListener.ATTR_NAME) != null){
+                session.removeAttribute(SessionChangedListener.ATTR_NAME);
+
+                Map<String, Object> sessionAttrs = new HashMap<>();
+                for(String key: session.attributes()){
+                    if(COOKIE_NAME.equals(key)) continue;
+                    sessionAttrs.put(key, session.attribute(key));
+                }
+                byte[] value = convertToBytes(sessionAttrs);
+                jedis.set(sessionCookieValue.getBytes(), value);
+            }
+            //no need to set expire on save to redis, because we do it in on every request when restore from redis
+            //jedis.expire(sessionCookieValue.getBytes(), expire);
         } catch (IOException e) {
             log.error("Cannot convert session attrs to byte[]", e);
         }

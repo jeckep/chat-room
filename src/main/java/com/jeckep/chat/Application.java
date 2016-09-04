@@ -1,15 +1,16 @@
 package com.jeckep.chat;
 
 
+import com.jeckep.chat.chat.AuthedUserListHolder;
 import com.jeckep.chat.chat.ChatWebSocketHandler;
 import com.jeckep.chat.chatroom.ChatroomController;
 import com.jeckep.chat.env.Envs;
 import com.jeckep.chat.index.IndexController;
-import com.jeckep.chat.chat.AuthedUserListHolder;
 import com.jeckep.chat.login.LoginController;
 import com.jeckep.chat.message.MsgDao;
-import com.jeckep.chat.session.redis.JedisSimplePersister;
+import com.jeckep.chat.session.persist.JedisSimplePersister;
 import com.jeckep.chat.session.persist.PSF;
+import com.jeckep.chat.session.persist.SessionChangedListener;
 import com.jeckep.chat.user.UserDao;
 import com.jeckep.chat.util.Filters;
 import com.jeckep.chat.util.Path;
@@ -33,6 +34,7 @@ public class Application {
         new PSF()
                 .setPersister(new JedisSimplePersister(jedis))
                 .addEventListener(AuthedUserListHolder.getInstance())
+                .addEventListener(new SessionChangedListener())
                 .init();
 
         staticFiles.location("/static");

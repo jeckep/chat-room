@@ -66,12 +66,7 @@ public class PSF {
 
     public static Filter afterFilter = (Request request, Response response) -> {
         String sessionCookieValue = request.session().attribute(COOKIE_NAME);
-        Map<String, Object> attrs = new HashMap<>();
-        for(String key: request.session().attributes()){
-            if(COOKIE_NAME.equals(key)) continue;
-            attrs.put(key, request.session().attribute(key));
-        }
-        instance.persister.save(sessionCookieValue, attrs, instance.expire);
+        instance.persister.save(sessionCookieValue, request.session(), instance.expire);
     };
 
     private  Cookie genCookie(){
