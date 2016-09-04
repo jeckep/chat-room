@@ -3,9 +3,11 @@ package com.jeckep.chat.user;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
 @AllArgsConstructor
-public class User implements IUser{
+public class User implements IUser, Serializable{
     int id;
     String name;
     String surname;
