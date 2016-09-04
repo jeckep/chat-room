@@ -1,7 +1,7 @@
 package com.jeckep.chat.chat;
 
-import com.jeckep.chat.login.AuthedUserListHolder;
 import com.jeckep.chat.message.Msg;
+import com.jeckep.chat.session.persist.PSF;
 import com.jeckep.chat.user.User;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.websocket.api.Session;
@@ -49,16 +49,16 @@ public class ChatWebSocketHandler {
     }
 
     public static User resolveUser(Session session){
-        String jsessionid = getJsessionid(session);
-        if (jsessionid == null){
+        String sessionCookie = getSessionCookie(session);
+        if (sessionCookie == null){
             return null;
         }
-        return AuthedUserListHolder.getByJsessionid(jsessionid);
+        return AuthedUserListHolder.getInstance().getBySessionCookie(sessionCookie);
     }
 
-    private static String getJsessionid(Session session){
+    private static String getSessionCookie(Session session){
         for(HttpCookie cookie: session.getUpgradeRequest().getCookies()){
-            if("JSESSIONID".equals(cookie.getName())){
+            if(PSF.COOKIE_NAME.equals(cookie.getName())){
                 return cookie.getValue();
             }
         }

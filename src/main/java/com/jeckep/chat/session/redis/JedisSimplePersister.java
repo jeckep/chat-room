@@ -1,5 +1,6 @@
-package com.jeckep.chat.session;
+package com.jeckep.chat.session.redis;
 
+import com.jeckep.chat.session.persist.Persister;
 import lombok.extern.slf4j.Slf4j;
 import redis.clients.jedis.Jedis;
 
@@ -35,11 +36,8 @@ public class JedisSimplePersister implements Persister {
     @Override
     public void save(String sessionCookieValue, Map<String, Object> sessionAttrs, int expire) {
         try {
-            if(!sessionAttrs.isEmpty()){
-                byte[] value = convertToBytes(sessionAttrs);
-                jedis.set(sessionCookieValue.getBytes(), value);
-            }
-
+            byte[] value = convertToBytes(sessionAttrs);
+            jedis.set(sessionCookieValue.getBytes(), value);
             jedis.expire(sessionCookieValue.getBytes(), expire);
         } catch (IOException e) {
             log.error("Cannot convert session attrs to byte[]", e);

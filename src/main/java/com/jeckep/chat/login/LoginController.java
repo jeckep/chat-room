@@ -27,7 +27,6 @@ public class LoginController {
     };
 
     public static Route handleLogout = (Request request, Response response) -> {
-        AuthedUserListHolder.remove(request.session().attribute("currentUser"));
         request.session().removeAttribute("currentUser");
         request.session().attribute("loggedOut", true);
         response.redirect(Path.Web.INDEX);
@@ -53,9 +52,8 @@ public class LoginController {
         final User user = Application.userDao.findOrCreate(iuser);
 
         //user authenticated
-        //set currentUserToSession
+        //set currentUser To Session. If user is in the session it means that they are logged in
         request.session().attribute("currentUser", user);
-        AuthedUserListHolder.put(request, user);
         if (getQueryLoginRedirect(request) != null) {
             response.redirect(getQueryLoginRedirect(request));
         }

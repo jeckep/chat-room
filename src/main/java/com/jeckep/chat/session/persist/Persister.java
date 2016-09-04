@@ -1,4 +1,4 @@
-package com.jeckep.chat.session;
+package com.jeckep.chat.session.persist;
 
 import java.util.Map;
 

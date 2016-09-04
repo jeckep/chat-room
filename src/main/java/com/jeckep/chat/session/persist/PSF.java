@@ -1,16 +1,13 @@
-package com.jeckep.chat.session;
+package com.jeckep.chat.session.persist;
 
 
-import lombok.Builder;
+import org.eclipse.jetty.server.session.AbstractSession;
 import spark.Filter;
 import spark.Request;
 import spark.Response;
 
 import javax.servlet.http.Cookie;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringJoiner;
-import java.util.UUID;
+import java.util.*;
 
 /*
 * Persist session filter.
@@ -26,6 +23,7 @@ public class PSF {
     private static PSF instance;
 
     private Persister persister;
+    private List<EventListener> listeners = new ArrayList<>();
     private int expire = 20 * 60; //sec = 20min
     private boolean secure = false; //cookie should be passed only over https
 
@@ -37,18 +35,31 @@ public class PSF {
     }
 
     public static Filter beforeFilter = (Request request, Response response) -> {
+        //as it is a before all filter, then event listeners must registered here, if you have them
+        if(request.session().isNew()){
+            for(EventListener l: instance.listeners){
+                // even it is wrong to try add bean for every user, but it is the only way to do it
+                // it will not be added more than once two list, because it is checked by ContainerLifeCycle#contains(l)
+                ((AbstractSession)request.session().raw()).getSessionManager().addEventListener(l);
+            }
+        }
+
         Cookie sessionCookie = getCookie(request, COOKIE_NAME);
         if(sessionCookie == null){
             sessionCookie = instance.genCookie();
+            //save cookie value in session to use it in after-filter
+            request.session().attribute(COOKIE_NAME, sessionCookie.getValue());
         }else{
+            //save cookie value in session to use it in after-filter
+            //session cookie should be saved to session first!
+            request.session().attribute(COOKIE_NAME, sessionCookie.getValue());
             Map<String, Object> attrs = instance.persister.restore(sessionCookie.getValue(), instance.expire);
             for(String key: attrs.keySet()){
                 request.session().attribute(key, attrs.get(key));
             }
         }
 
-        //save cookie value in session to use it in after-filter
-        request.session().attribute(COOKIE_NAME, sessionCookie.getValue());
+
         //add cookie on every response, to update expire time
         response.raw().addCookie(instance.genCookie(sessionCookie.getValue()));
     };
@@ -76,7 +87,7 @@ public class PSF {
         return cookie;
     }
 
-    public static Cookie getCookie(Request req, String name){
+    private static Cookie getCookie(Request req, String name){
         for(Cookie cookie: req.raw().getCookies()){
             if(name.equals(cookie.getName())){
                 return cookie;
@@ -97,6 +108,11 @@ public class PSF {
 
     public PSF setSecure(boolean secure) {
         this.secure = secure;
+        return this;
+    }
+
+    public PSF addEventListener(EventListener listener){
+        listeners.add(listener);
         return this;
     }
 }
