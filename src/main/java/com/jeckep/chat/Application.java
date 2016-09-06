@@ -8,9 +8,9 @@ import com.jeckep.chat.env.Envs;
 import com.jeckep.chat.index.IndexController;
 import com.jeckep.chat.login.LoginController;
 import com.jeckep.chat.message.MsgDao;
-import com.jeckep.chat.session.persist.JedisSimplePersister;
 import com.jeckep.chat.session.persist.PSF;
-import com.jeckep.chat.session.persist.SessionChangedListener;
+import com.jeckep.chat.session.persist.redis.JedisConnector;
+import com.jeckep.chat.session.persist.redis.RedisSimplePersister;
 import com.jeckep.chat.user.UserDao;
 import com.jeckep.chat.util.Filters;
 import com.jeckep.chat.util.Path;
@@ -31,11 +31,8 @@ public class Application {
         migrateDB();
 
         final Jedis jedis = new Jedis("redis");
-        new PSF()
-                .setPersister(new JedisSimplePersister(jedis))
-                .addEventListener(AuthedUserListHolder.getInstance())
-                .addEventListener(new SessionChangedListener())
-                .init();
+        final PSF psf = new PSF(new RedisSimplePersister(new JedisConnector(jedis)))
+                .addEventListener(AuthedUserListHolder.getInstance());
 
         staticFiles.location("/static");
         staticFiles.expireTime(600);
@@ -43,7 +40,7 @@ public class Application {
         init();
 
 //        enableDebugScreen();
-        before("*",                  PSF.beforeFilter);
+        before("*",                  psf.getBeforeFilter());
         before("*",                  Filters.handleLocaleChange);
 
         get(Path.Web.CHAT_ROOM + "/:id",      ChatroomController.serveChatPage);
@@ -56,7 +53,7 @@ public class Application {
 
         //Set up after-filters (called after each get/post)
         after("*",                   Filters.addGzipHeader);
-        after("*",                   PSF.afterFilter);
+        after("*",                   psf.getAfterFilter());
 
         exception(Exception.class, (exception, request, response) -> {
             log.error("Unhandled exception",exception);

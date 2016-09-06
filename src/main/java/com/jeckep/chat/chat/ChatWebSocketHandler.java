@@ -58,7 +58,7 @@ public class ChatWebSocketHandler {
 
     private static String getSessionCookie(Session session){
         for(HttpCookie cookie: session.getUpgradeRequest().getCookies()){
-            if(PSF.COOKIE_NAME.equals(cookie.getName())){
+            if(PSF.SESSION_COOKIE_NAME.equals(cookie.getName())){
                 return cookie.getValue();
             }
         }

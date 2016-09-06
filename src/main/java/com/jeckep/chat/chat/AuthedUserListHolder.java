@@ -46,9 +46,9 @@ public class AuthedUserListHolder implements  HttpSessionAttributeListener {
     @Override
     public void attributeAdded(HttpSessionBindingEvent event) {
         if("currentUser".equals(event.getName())){
-            final String sessionCookieValue = (String) event.getSession().getAttribute(PSF.COOKIE_NAME);
+            final String sessionCookieValue = (String) event.getSession().getAttribute(PSF.SESSION_COOKIE_NAME);
             if(sessionCookieValue == null){
-                log.error(PSF.COOKIE_NAME + " not found in session attrs. It should be placed in attrs before all others");
+                log.error(PSF.SESSION_COOKIE_NAME + " not found in session attrs. It should be placed in attrs before all others");
                 return;
             }
             final User currentUser = (User) event.getValue();
@@ -67,7 +67,7 @@ public class AuthedUserListHolder implements  HttpSessionAttributeListener {
     @Override
     public void attributeReplaced(HttpSessionBindingEvent event) {
         if("currentUser".equals(event.getName())) {
-            final String sessionCookieValue = (String) event.getSession().getAttribute(PSF.COOKIE_NAME);
+            final String sessionCookieValue = (String) event.getSession().getAttribute(PSF.SESSION_COOKIE_NAME);
             final User newCurrentUser = (User) event.getSession().getAttribute(event.getName());
             put(sessionCookieValue, newCurrentUser);
         }

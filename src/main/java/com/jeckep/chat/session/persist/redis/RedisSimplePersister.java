@@ -1,31 +1,27 @@
-package com.jeckep.chat.session.persist;
+package com.jeckep.chat.session.persist.redis;
 
-import lombok.extern.slf4j.Slf4j;
-import redis.clients.jedis.Jedis;
+import com.jeckep.chat.session.persist.PSF;
+import com.jeckep.chat.session.persist.Persister;
 import spark.Session;
 
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.jeckep.chat.session.persist.PSF.COOKIE_NAME;
 
-@Slf4j
-public class JedisSimplePersister implements Persister {
-    private Jedis jedis;
+public class RedisSimplePersister implements Persister {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RedisSimplePersister.class);
+    private RedisConnector redis;
 
-    public JedisSimplePersister(Jedis jedis) {
-        this.jedis = jedis;
+    public RedisSimplePersister(RedisConnector redis) {
+        this.redis = redis;
     }
 
-    // we should restore session from redis every time, if we have more than one app node and load balancer
     @Override
     public Map<String, Object> restore(String sessionCookieValue, int expire) {
-        if(jedis.exists(sessionCookieValue.getBytes())){
-            jedis.expire(sessionCookieValue.getBytes(), expire);
-        }
-        byte[] value = jedis.get(sessionCookieValue.getBytes());
+        byte[] value = redis.get(sessionCookieValue.getBytes());
         if (value != null) {
+            redis.expire(sessionCookieValue.getBytes(), expire);
             try {
                 Map<String, Object> attrs = (Map<String, Object>) convertFromBytes(value);
                 return attrs;
@@ -37,22 +33,19 @@ public class JedisSimplePersister implements Persister {
     }
 
     @Override
-    // save redis only if session object was changed
     public void save(String sessionCookieValue, Session session, int expire) {
         try {
-            if(session.attribute(SessionChangedListener.ATTR_NAME) != null){
-                session.removeAttribute(SessionChangedListener.ATTR_NAME);
-
-                Map<String, Object> sessionAttrs = new HashMap<>();
-                for(String key: session.attributes()){
-                    if(COOKIE_NAME.equals(key)) continue;
-                    sessionAttrs.put(key, session.attribute(key));
-                }
-                byte[] value = convertToBytes(sessionAttrs);
-                jedis.set(sessionCookieValue.getBytes(), value);
+            Map<String, Object> sessionAttrs = new HashMap<>();
+            for(String key: session.attributes()){
+                // do not store session cookie value in a map, because it is a key,
+                // we can do it, but there is no need
+                if(PSF.SESSION_COOKIE_NAME.equals(key)) continue;
+                sessionAttrs.put(key, session.attribute(key));
             }
+            byte[] value = convertToBytes(sessionAttrs);
+            redis.set(sessionCookieValue.getBytes(), value);
             //no need to set expire on save to redis, because we do it in on every request when restore from redis
-            //jedis.expire(sessionCookieValue.getBytes(), expire);
+            //redis.expire(sessionCookieValue.getBytes(), expire);
         } catch (IOException e) {
             log.error("Cannot convert session attrs to byte[]", e);
         }
