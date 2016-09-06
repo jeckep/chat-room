@@ -1,11 +1,11 @@
 package com.jeckep.chat.session.persist.redis;
 
-import redis.clients.jedis.Jedis;
+import redis.clients.jedis.BinaryJedisCommands;
 
 public class JedisConnector implements RedisConnector {
-    private Jedis jedis;
+    private BinaryJedisCommands jedis;
 
-    public JedisConnector(Jedis jedis) {
+    public JedisConnector(BinaryJedisCommands jedis) {
         this.jedis = jedis;
     }
 
