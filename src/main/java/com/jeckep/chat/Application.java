@@ -1,6 +1,9 @@
 package com.jeckep.chat;
 
 
+import com.github.jeckep.spark.PSF;
+import com.github.jeckep.spark.redis.JedisConnector;
+import com.github.jeckep.spark.redis.RedisSimplePersister;
 import com.jeckep.chat.chat.AuthedUserListHolder;
 import com.jeckep.chat.chat.ChatWebSocketHandler;
 import com.jeckep.chat.chatroom.ChatroomController;
@@ -8,9 +11,6 @@ import com.jeckep.chat.env.Envs;
 import com.jeckep.chat.index.IndexController;
 import com.jeckep.chat.login.LoginController;
 import com.jeckep.chat.message.MsgDao;
-import com.jeckep.chat.session.persist.PSF;
-import com.jeckep.chat.session.persist.redis.JedisConnector;
-import com.jeckep.chat.session.persist.redis.RedisSimplePersister;
 import com.jeckep.chat.user.UserDao;
 import com.jeckep.chat.util.Filters;
 import com.jeckep.chat.util.Path;

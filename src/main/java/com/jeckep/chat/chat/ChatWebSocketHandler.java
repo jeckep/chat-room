@@ -1,8 +1,8 @@
 package com.jeckep.chat.chat;
 
+import com.github.jeckep.spark.PSF;
 import com.jeckep.chat.Application;
 import com.jeckep.chat.message.Msg;
-import com.jeckep.chat.session.persist.PSF;
 import com.jeckep.chat.user.User;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.websocket.api.Session;

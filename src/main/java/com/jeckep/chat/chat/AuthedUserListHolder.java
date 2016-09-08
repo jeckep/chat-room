@@ -1,7 +1,7 @@
 package com.jeckep.chat.chat;
 
 
-import com.jeckep.chat.session.persist.PSF;
+import com.github.jeckep.spark.PSF;
 import com.jeckep.chat.user.User;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
