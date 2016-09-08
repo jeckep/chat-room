@@ -43,7 +43,8 @@ public class Application {
         before("*",                  psf.getBeforeFilter());
         before("*",                  Filters.handleLocaleChange);
 
-        get(Path.Web.CHAT_ROOM + "/:id",      ChatroomController.serveChatPage);
+        get(Path.Web.CHAT_ROOM,      ChatroomController.serveChatPage);
+        get(Path.Web.CHAT_ROOM + ":id",      ChatroomController.serveChatPage);
         get(Path.Web.INDEX,          IndexController.serveIndexPage);
         get(Path.Web.LOGIN,          LoginController.serveLoginPage);
         get(Path.Web.LOGOUT,        LoginController.handleLogout);

@@ -9,11 +9,11 @@
 <div class="content container-fluid bootstrap snippets">
     <div class="row row-broken">
         <div class="col-sm-3 col-xs-12">
+            <h3>$msg.get('CHAT_USERS')</h3>
             <div class="col-inside-lg decor-default chat" style="overflow: hidden; outline: none;" tabindex="5000">
                 <div class="chat-users">
-                    <h6>Online</h6>
                     #foreach($user in $users)
-                    <div class="user #if($user.getId() == $userToId) #then active #end" onclick="window.location='/chatroom/$user.getId()';">
+                    <div class="user #if($user.getId() == $userToId) active #end" onclick="window.location='/chatroom/$user.getId()';">
                         <div class="avatar">
                             <img src="$user.getPicture()" alt="$user.getFullName()">
                             <div class="status offline"></div>
@@ -25,21 +25,23 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-9 col-xs-12 chat" style="overflow: hidden; outline: none;" tabindex="5001">
-            <div class="col-inside-lg decor-default">
+        #if ($userToId)
+        <div class="col-sm-9 col-xs-12" style="overflow: hidden; outline: none;" tabindex="5001">
+            <h3>$msg.get('CHAT_MESSAGES')</h3>
+            <div class="col-inside-lg decor-default chat">
                 <div class="chat-body">
-                    <h6>Mini Chat</h6>
                     <div id="messages">
                         <!--populated by js via web sockets-->
                     </div>
-                    <div class="answer-add">
-                        <input id="message" placeholder="Write a message">
-                        <span id="send" class="answer-btn answer-btn-2"></span>
-                    </div>
                 </div>
             </div>
+            <div class="answer-add">
+                <input id="message" placeholder="$msg.get('CHAT_INPUT_PLACEHOLDER')">
+                <span id="send" class="answer-btn answer-btn-2"></span>
+            </div>
         </div>
+        <script src="/js/websocket.js"></script>
+        #end
     </div>
 </div>
-<script src="/js/websocket.js"></script>
 #end
