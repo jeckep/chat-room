@@ -24,6 +24,19 @@ public class UserDao {
         }
     }
 
+    public List<User> getAllUsersExcept(int userId){
+        String sql = "select id, name, surname, email, picture" +
+                " from chatuser" +
+                " where id <> :id";
+
+        try(Connection con = sql2o.open()) {
+            return con.createQuery(sql)
+                    .addParameter("id", userId)
+                    .executeAndFetch(User.class);
+
+        }
+    }
+
     public User findOrCreate(IUser user){
         User foundUser = findByEmail(user.getEmail());
         if(foundUser == null){

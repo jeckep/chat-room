@@ -1,6 +1,8 @@
 package com.jeckep.chat.login;
 
+import com.github.jeckep.spark.PSF;
 import com.jeckep.chat.Application;
+import com.jeckep.chat.chat.AuthedUserListHolder;
 import com.jeckep.chat.login.oauth.OAuth;
 import com.jeckep.chat.user.IUser;
 import com.jeckep.chat.user.User;
@@ -67,10 +69,19 @@ public class LoginController {
 
     // The origin of the request (request.pathInfo()) is saved in the session so
     // the user can be redirected back after login
-    public static void ensureUserIsLoggedIn(Request request, Response response) {
+    public static boolean ensureUserIsLoggedIn(Request request, Response response) {
         if (request.session().attribute("currentUser") == null) {
             request.session().attribute("loginRedirect", request.pathInfo());
             response.redirect(Path.Web.LOGIN);
+            return false;
+        }else{
+            //it fix bug, some times for some reason map in AuthedUserListHolder not updated
+            //TODO fix it, to reproduce: comment this, go to chat room, what more than 10 or 20 minutes, update page
+            final String sessionCookieValue = request.session().attribute(PSF.SESSION_COOKIE_NAME);
+            final User newCurrentUser = request.session().attribute("currentUser");
+            AuthedUserListHolder.getInstance().put(sessionCookieValue, newCurrentUser);
+
+            return true;
         }
     }
 }

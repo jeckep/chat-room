@@ -33,7 +33,8 @@ public class MsgManager {
             Session receiverSession = liveSessions.get(msg.getReceiver());
             if(receiverSession != null && msg.getSender() != msg.getReceiver()){
                 //send to receiver
-                send(receiverSession, msg);
+                // swap current user and interlocutor
+                send(receiverSession, new MsgWrapper(msg.getMsg(), msg.getInterlocutor(), msg.getCurrentUser()));
             }
         }
     }
@@ -46,9 +47,11 @@ public class MsgManager {
 
     private static void send(Session session, MsgWrapper msg){
         try {
-            session.getRemote().sendString(String.valueOf(new JSONObject()
-                    .put("userMessage", createHtmlMessageFromSender(msg))
-            ));
+            if(session.isOpen()){
+                session.getRemote().sendString(String.valueOf(new JSONObject()
+                        .put("userMessage", createHtmlMessageFromSender(msg))
+                ));
+            }
         } catch (Exception e) {
             log.error("Cannot process message from user:" + msg.getSender() + " to user: " + msg.getReceiver(), e);
         }

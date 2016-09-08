@@ -16,10 +16,10 @@
                     <div class="user #if($user.getId() == $userToId) active #end" onclick="window.location='/chatroom/$user.getId()';">
                         <div class="avatar">
                             <img src="$user.getPicture()" alt="$user.getFullName()">
-                            <div class="status offline"></div>
+                            <div class="status #if ($onlineIds.contains($user.getId())) online #end"></div>
                         </div>
                         <div class="name">$user.getFullName()</div>
-                        <div class="mood">User status</div>
+                        <div class="mood">#if ($onlineIds.contains($user.getId())) $msg.get('CHAT_ONLINE') #else $msg.get('CHAT_OFFLINE') #end</div>
                     </div>
                     #end
                 </div>

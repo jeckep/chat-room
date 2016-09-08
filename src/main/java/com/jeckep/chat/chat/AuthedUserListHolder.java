@@ -28,7 +28,7 @@ public class AuthedUserListHolder implements  HttpSessionAttributeListener {
             log.info("User " + user.getId() + " added.");
     }
 
-    void remove(User user){
+    private void remove(User user){
         String sessionCookie = userToSessionCookie.get(user);
         if(sessionCookie != null){
             sessionCookieToUser.remove(sessionCookie);

@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.net.HttpCookie;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @WebSocket
@@ -57,7 +59,7 @@ public class ChatWebSocketHandler {
         }
     }
 
-    public static User resolveUser(Session session){
+    private static User resolveUser(Session session){
         String sessionCookie = getSessionCookie(session);
         if (sessionCookie == null){
             return null;
@@ -74,4 +76,14 @@ public class ChatWebSocketHandler {
         return null;
     }
 
+    public static Set<Integer> getOnlineUserIds(){
+        cleanSessions();
+        return liveSessions.keySet();
+    }
+
+    private static synchronized void cleanSessions(){
+        liveSessions = liveSessions.entrySet().stream()
+                .filter(e -> e.getValue().isOpen())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
 }
