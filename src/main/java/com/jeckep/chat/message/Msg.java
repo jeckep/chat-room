@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class Msg {
+public class Msg implements IMsg {
     int id;
     int sender;
     int receiver;

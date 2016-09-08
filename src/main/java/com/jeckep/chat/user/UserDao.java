@@ -68,4 +68,21 @@ public class UserDao {
             }
         }
     }
+
+    public User getUserById(int id) {
+        String sql = "select id, name, surname, email, picture" +
+                " from chatuser" +
+                " where id = :id";
+
+        try(Connection con = sql2o.open()) {
+            List<User> users =  con.createQuery(sql)
+                    .addParameter("id", id)
+                    .executeAndFetch(User.class);
+            if(users.isEmpty()){
+                return null;
+            }else{
+                return users.get(0);
+            }
+        }
+    }
 }

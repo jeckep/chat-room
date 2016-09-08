@@ -40,7 +40,7 @@ function sendMessage(message) {
 //Update the chat-panel, and the list of connected users
 function updateChat(msg) {
     var data = JSON.parse(msg.data);
-    insert("chat", data.userMessage);
+    insert("messages", data.userMessage);
 }
 
 //Helper function for inserting HTML as the first child of an element

@@ -1,5 +1,6 @@
 package com.jeckep.chat.chat;
 
+import com.jeckep.chat.Application;
 import com.jeckep.chat.message.Msg;
 import com.jeckep.chat.session.persist.PSF;
 import com.jeckep.chat.user.User;
@@ -41,8 +42,16 @@ public class ChatWebSocketHandler {
         try {
             WSMsg msg = MsgManager.parse(json);
             User sender = resolveUser(session);
+            User interlocutor = Application.userDao.getUserById(msg.getTo());
+            //TODO check that current user can send messages to interlocutor
+
             log.info("Message from user:" + sender.getId() + " to user: " + msg.getTo() + " received and parsed.");
-            MsgManager.process(new Msg(sender.getId(), msg.getTo(), msg.getMessage()), session);
+            MsgManager.process(
+                    new MsgWrapper(
+                            new Msg(sender.getId(), msg.getTo(), msg.getMessage()),
+                            sender,
+                            interlocutor),
+                    session);
         } catch (IOException e) {
             log.error("Cannot parse web socket json message", e);
         }

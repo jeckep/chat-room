@@ -1,34 +1,45 @@
 #parse("/velocity/layout.html")
 #@mainLayout()
-<div class="raw">
-    <div class="col-sm-3">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Users</h3>
-            </div>
-            <div id="userlist" class="list-group panel-body">
-            #foreach($user in $users)
-                <a class="list-group-item #if($user.getId() == $userToId)#then active #end" href="/chatroom/$user.getId()">$user.getName()</a>
-            #end
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-9">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Messages</h3>
-            </div>
-            <div id="chat" class="panel-body"><!-- Built by JS --> </div>
-        </div>
-    </div>
-</div>
-<div class="raw">
-    <div class="col-sm-3"></div>
-    <div class="col-sm-9" id="chatControls">
-        <input id="message" placeholder="Type your message">
-        <button id="send">Send</button>
-    </div>
-</div>
-<script src="/js/websocketDemo.js"></script>
-#end
 
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+<link href="/css/chatroom.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.nicescroll/3.6.8-fix/jquery.nicescroll.min.js"></script>
+<script src="/js/chatroom.js"></script>
+
+<div class="content container-fluid bootstrap snippets">
+    <div class="row row-broken">
+        <div class="col-sm-3 col-xs-12">
+            <div class="col-inside-lg decor-default chat" style="overflow: hidden; outline: none;" tabindex="5000">
+                <div class="chat-users">
+                    <h6>Online</h6>
+                    #foreach($user in $users)
+                    <div class="user #if($user.getId() == $userToId) #then active #end" onclick="window.location='/chatroom/$user.getId()';">
+                        <div class="avatar">
+                            <img src="$user.getPicture()" alt="$user.getFullName()">
+                            <div class="status offline"></div>
+                        </div>
+                        <div class="name">$user.getFullName()</div>
+                        <div class="mood">User status</div>
+                    </div>
+                    #end
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-9 col-xs-12 chat" style="overflow: hidden; outline: none;" tabindex="5001">
+            <div class="col-inside-lg decor-default">
+                <div class="chat-body">
+                    <h6>Mini Chat</h6>
+                    <div id="messages">
+                        <!--populated by js via web sockets-->
+                    </div>
+                    <div class="answer-add">
+                        <input id="message" placeholder="Write a message">
+                        <span id="send" class="answer-btn answer-btn-2"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/js/websocket.js"></script>
+#end

@@ -27,4 +27,8 @@ public class User implements IUser, Serializable{
         this.name = name;
         this.email = email;
     }
+
+    public String getFullName(){
+        return name + " " + surname;
+    }
 }
