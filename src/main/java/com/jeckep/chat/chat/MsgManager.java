@@ -8,7 +8,9 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
 import static com.jeckep.chat.chat.ChatWebSocketHandler.liveSessions;
 import static j2html.TagCreator.div;
@@ -59,6 +61,9 @@ public class MsgManager {
 
     //Builds a HTML element with a sender-name, a message, and a timestamp,
     private static String createHtmlMessageFromSender(MsgWrapper msg) {
+        final DateFormat df = new SimpleDateFormat("HH:mm dd.MM");
+        df.setTimeZone(TimeZone.getTimeZone("Europe/Moscow"));
+
         final User sender = msg.curUsrIsSenderOfTheMsg()? msg.getCurrentUser() : msg.getInterlocutor();
         final String leftOrRight = msg.curUsrIsSenderOfTheMsg() ? "right" : "left";
 
@@ -68,7 +73,7 @@ public class MsgManager {
                     img().withSrc(sender.getPicture()).withAlt(sender.getFullName())),
             div().withClass("name").withText(sender.getFullName()),
             div().withClass("text").withText(msg.getMessage()),
-            div().withClass("time").withText(new SimpleDateFormat("HH:mm dd.MM").format(msg.getTs()))
+            div().withClass("time").withText(df.format(msg.getTs()))
         ).render();
     }
 }
