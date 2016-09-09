@@ -2,7 +2,7 @@
     padding-bottom: 0;
 }
 .col-inside-lg {
-    padding: 20px;
+    padding: 0px 10px 0px 0px;
 }
 .chat {
     height: calc(100vh - 260px);
@@ -222,7 +222,7 @@
     margin-top: -18px;
 }
 .answer-add .answer-btn-2 {
-    background: url("http://91.234.35.26/iwiki-admin/v1.0.0/admin/img/icon-41.png") 50% 50% no-repeat;
+    background: url("/img/send-message.png") 50% 50% no-repeat;
     right: 20px;
 }
 .chat input::-webkit-input-placeholder {
