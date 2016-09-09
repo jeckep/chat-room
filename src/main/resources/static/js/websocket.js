@@ -2,7 +2,7 @@ var ws;
 
 function setupWebSocket(){
     clear();
-    ws = new WebSocket("ws://" + location.hostname + ":" + location.port + "/chat/");
+    ws = new WebSocket("wss://" + location.hostname + ":" + location.port + "/chat/");
     ws.onmessage = function (msg) { updateChat(msg); };
     ws.onopen = function() {
         //Send message to load old messages
