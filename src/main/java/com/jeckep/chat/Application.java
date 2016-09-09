@@ -2,7 +2,7 @@ package com.jeckep.chat;
 
 
 import com.github.jeckep.spark.PSF;
-import com.github.jeckep.spark.redis.JedisConnector;
+import com.github.jeckep.spark.redis.JedisThreadSafeConnector;
 import com.github.jeckep.spark.redis.RedisSimplePersister;
 import com.jeckep.chat.chat.AuthedUserListHolder;
 import com.jeckep.chat.chat.ChatWebSocketHandler;
@@ -17,7 +17,8 @@ import com.jeckep.chat.util.Filters;
 import com.jeckep.chat.util.Path;
 import lombok.extern.slf4j.Slf4j;
 import org.flywaydb.core.Flyway;
-import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 
 import static spark.Spark.*;
 
@@ -31,8 +32,8 @@ public class Application {
         msgDao = new MsgDao();
         migrateDB();
 
-        final Jedis jedis = new Jedis("redis");
-        final PSF psf = new PSF(new RedisSimplePersister(new JedisConnector(jedis)))
+        final JedisPool pool = new JedisPool(new JedisPoolConfig(), "redis");
+        final PSF psf = new PSF(new RedisSimplePersister(new JedisThreadSafeConnector(pool)))
                 .addEventListener(AuthedUserListHolder.getInstance());
 
         staticFiles.location("/static");
