@@ -1,28 +1,30 @@
-//Establish the WebSocket connection and set up event handlers
-var webSocket = new WebSocket("ws://" + location.hostname + ":" + location.port + "/chat/");
-webSocket.onmessage = function (msg) { updateChat(msg); };
-webSocket.onclose = function () {
-// This some times causes problems if user click links, if this executes before redirect
-// TODO fix it
-//    window.location.reload(true);
-};
+var ws;
 
-//Send message to load old messages
-webSocket.onopen = function() {
-    sendMessage("LOAD_OLD_MESSAGES");
+function setupWebSocket(){
+    clear();
+    ws = new WebSocket("ws://" + location.hostname + ":" + location.port + "/chat/");
+    ws.onmessage = function (msg) { updateChat(msg); };
+    ws.onopen = function() {
+        //Send message to load old messages
+        sendMessage("LOAD_OLD_MESSAGES");
+    };
+    ws.onclose = function () {
+        setTimeout(setupWebSocket, 500);
+    };
 }
 
+setupWebSocket();
+
+
 //Send message if "Send" is clicked
-id("send").addEventListener("click", function () {
-    sendMessage(id("message").value);
+$("#send").click(function () {
+    sendMessage($("#message").val());
 });
 
 //Send message if enter is pressed in the input field
-id("message").addEventListener("keypress", function (e) {
-    if (e.keyCode === 13) { sendMessage(e.target.value); }
+$("#message").keypress(function (e) {
+    if (e.keyCode === 13) { sendMessage($("#message").val()); }
 });
-
-
 
 //Send a message if it's not empty, then clear the input field
 function sendMessage(message) {
@@ -32,24 +34,28 @@ function sendMessage(message) {
             "to": toUserId,
              "message": message
         };
-        webSocket.send(JSON.stringify(msg));
-        id("message").value = "";
+        ws.send(JSON.stringify(msg));
+        $("#message").val("");
     }
+}
+
+function clear(){
+    $("#messages").empty();
 }
 
 //Update the chat-panel, and the list of connected users
 function updateChat(msg) {
     var data = JSON.parse(msg.data);
-    insert("messages", data.userMessage);
+    $("#messages").append($(data.userMessage));
+    setTimeout(scrollDown, 500)
 }
 
-//Helper function for inserting HTML as the first child of an element
-function insert(targetId, message) {
-//    id(targetId).insertAdjacentHTML("afterbegin", message);
-    id(targetId).insertAdjacentHTML("beforeEnd", message);
-}
+function scrollDown(){
+    var totalHeight = 0;
 
-//Helper function for selecting element by id
-function id(id) {
-    return document.getElementById(id);
+    $("#messages").children().each(function(){
+        totalHeight = totalHeight + $(this).outerHeight(true);
+    });
+
+    $('#nc-messages').getNiceScroll(0).doScrollTop(totalHeight);
 }

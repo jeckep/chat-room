@@ -1,7 +1,7 @@
 #parse("/velocity/layout.html")
 #@mainLayout()
 
-<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+<link href="/css/font-awesome.min.css" rel="stylesheet">
 <link href="/css/chatroom.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.nicescroll/3.6.8-fix/jquery.nicescroll.min.js"></script>
 <script src="/js/chatroom.js"></script>
@@ -10,8 +10,8 @@
     <div class="row row-broken">
         <div class="col-sm-3 col-xs-12">
             <h3>$msg.get('CHAT_USERS')</h3>
-            <div class="col-inside-lg decor-default chat" style="overflow: hidden; outline: none;" tabindex="5000">
-                <div class="chat-users">
+            <div id="nc-users" class="col-inside-lg decor-default chat" style="overflow: hidden; outline: none;" tabindex="5000">
+                <div id="userlist" class="chat-users">
                     #foreach($user in $users)
                     <div class="user #if($user.getId() == $userToId) active #end" onclick="window.location='/chatroom/$user.getId()';">
                         <div class="avatar">
@@ -28,7 +28,7 @@
         #if ($userToId)
         <div class="col-sm-9 col-xs-12" style="overflow: hidden; outline: none;" tabindex="5001">
             <h3>$msg.get('CHAT_MESSAGES')</h3>
-            <div class="col-inside-lg decor-default chat">
+            <div id="nc-messages" class="col-inside-lg decor-default chat">
                 <div class="chat-body">
                     <div id="messages">
                         <!--populated by js via web sockets-->

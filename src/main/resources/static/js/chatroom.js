@@ -1,3 +1,4 @@
 $(function(){
-    $(".chat").niceScroll();
+    $("#nc-users").niceScroll();
+    $("#nc-messages").niceScroll();
 })
