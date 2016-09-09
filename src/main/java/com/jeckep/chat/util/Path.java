@@ -14,6 +14,7 @@ public class Path {
         @Getter public static final String LOGOUT = "/logout/";
         @Getter public static final String OAUTH2_CALLBACK = "/oauth2callback/:service/";
         @Getter public static final String CHAT_ROOM = "/chatroom/";
+        @Getter public static final String CONTACT = "/contact/";
     }
 
     public static class Template {
@@ -21,6 +22,7 @@ public class Path {
         public final static String INDEX = "/velocity/index/index.html";
         public final static String LOGIN = "/velocity/login/login.html";
         public static final String NOT_FOUND = "/velocity/notFound.html";
+        public static final String CONTACT = "/velocity/contact.html";
     }
 
 }

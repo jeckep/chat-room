@@ -15,4 +15,10 @@ Dependencies
 * Redis client: [jedis](https://github.com/xetorthio/jedis)
 * OAuth2 library: [scribejava](https://github.com/scribejava/scribejava)
 * Java additions: [lombok](https://projectlombok.org/)
+* Development envs: [docker](https://github.com/docker/docker) and [docker-compose](https://github.com/docker/compose)
+
+Deployment
+----------
+
+To deploy app as docker container, with other components(nginx, postgres, redis) use instructions and deploy scripts [here](https://github.com/jeckep/chat-room-deploy-scripts)
 

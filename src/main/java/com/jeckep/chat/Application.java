@@ -7,6 +7,7 @@ import com.github.jeckep.spark.redis.RedisSimplePersister;
 import com.jeckep.chat.chat.AuthedUserListHolder;
 import com.jeckep.chat.chat.ChatWebSocketHandler;
 import com.jeckep.chat.chatroom.ChatroomController;
+import com.jeckep.chat.contact.ContactController;
 import com.jeckep.chat.env.Envs;
 import com.jeckep.chat.index.IndexController;
 import com.jeckep.chat.login.LoginController;
@@ -50,6 +51,7 @@ public class Application {
         get(Path.Web.LOGOUT,        LoginController.handleLogout);
         get(Path.Web.LOGIN_AUTH2,        LoginController.handleLoginOAuth2);
         get(Path.Web.OAUTH2_CALLBACK,        LoginController.handleCallbackOAuth2);
+        get(Path.Web.CONTACT,        ContactController.serveContactPage);
 //        get("*",                     ViewUtil.notFound);
 
         //Set up after-filters (called after each get/post)

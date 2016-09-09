@@ -17,7 +17,6 @@ redis:
     - ~/.docker-volumes/mobydock/redis/data:/data
   entrypoint:
     - redis-server
-    - --appendonly yes
 
 #mobydock:
 #  build: .
