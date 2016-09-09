@@ -1,6 +1,7 @@
 package com.jeckep.chat.env;
 
 public class Envs {
+    public static final String HTTP = System.getenv("HTTP");
     public static final String HOSTNAME = System.getenv("HOSTNAME");
 
     public static final String DB_NAME = System.getenv("DB_NAME");

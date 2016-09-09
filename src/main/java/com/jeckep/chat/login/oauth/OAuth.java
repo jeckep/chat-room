@@ -155,6 +155,6 @@ public class OAuth {
     }
 
     private static String callbackURL(String service){
-        return "http://" + Envs.HOSTNAME + "/oauth2callback/" + service + "/";
+        return Envs.HTTP + "://" + Envs.HOSTNAME + "/oauth2callback/" + service + "/";
     }
 }
