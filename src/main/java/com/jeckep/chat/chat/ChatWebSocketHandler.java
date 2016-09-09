@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @WebSocket
 public class ChatWebSocketHandler {
-    public static Map<Integer, Session> liveSessions = new HashMap<>();
+    static Map<Integer, Session> liveSessions = new HashMap<>();
 
     @OnWebSocketConnect
     public void onConnect(Session session) throws Exception {
@@ -85,5 +85,31 @@ public class ChatWebSocketHandler {
         liveSessions = liveSessions.entrySet().stream()
                 .filter(e -> e.getValue().isOpen())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    // we need it to prevent websocket session expire and to prevent nginx to close proxy connection
+    private static Thread pinger = new Thread(new KeepWebSocketSessionAlive());
+    static {
+        pinger.start();
+    }
+    private static class KeepWebSocketSessionAlive implements Runnable {
+        @Override
+        public void run() {
+            while (true){
+                try {
+                    Thread.sleep(50 * 1000);
+                    cleanSessions();
+                    for(Session session: liveSessions.values()){
+                        if(session.isOpen()){
+                            session.getRemote().sendPing(null);
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    log.error("interrupted", e);
+                } catch (IOException e) {
+                    log.error("cannot send ping", e);
+                }
+            }
+        }
     }
 }
