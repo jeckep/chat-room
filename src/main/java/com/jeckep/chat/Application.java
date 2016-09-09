@@ -62,11 +62,19 @@ public class Application {
         exception(Exception.class, (exception, request, response) -> {
             log.error("Unhandled exception",exception);
         });
+
+        info();
     }
 
     private static void migrateDB(){
         Flyway flyway = new Flyway();
         flyway.setDataSource(Envs.DB_URL, Envs.DB_USER, Envs.DB_PASSWORD);
         flyway.migrate();
+    }
+
+    public static void info(){
+        log.info("freeMemory:" + Runtime.getRuntime().freeMemory()/1024/1204 + "Mb");
+        log.info("totalMemory:" + Runtime.getRuntime().totalMemory()/1024/1204 + "Mb");
+        log.info("maxMemory:" + Runtime.getRuntime().maxMemory()/1024/1204 + "Mb");
     }
 }
