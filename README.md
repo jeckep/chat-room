@@ -22,3 +22,7 @@ Deployment
 
 To deploy app as docker container, with other components(nginx, postgres, redis) use instructions and deploy scripts [here](https://github.com/jeckep/chat-room-deploy-scripts)
 
+Live instance
+-------------
+
+https://jeckep.online/
