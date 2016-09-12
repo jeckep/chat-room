@@ -1,18 +1,22 @@
 package com.jeckep.chat.index;
 
-import com.jeckep.chat.util.*;
-import spark.Request;
-import spark.Response;
-import spark.Route;
+import com.jeckep.chat.util.Path;
+import com.jeckep.chat.util.ViewUtil;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 
-import java.util.HashMap;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
-
+@Controller
 public class IndexController {
-    public static Route serveIndexPage = (Request request, Response response) -> {
-        Map<String, Object> model = new HashMap<>();
+
+    @GetMapping(Path.Web.INDEX)
+    public String index(Map<String, Object> model, HttpServletRequest request) {
         model.put("nav_active", "home");
-        return ViewUtil.render(request, model, Path.Template.INDEX);
-    };
+        ViewUtil.putLayoutVars(request, model);
+        return Path.Template.INDEX;
+    }
+
+
 }

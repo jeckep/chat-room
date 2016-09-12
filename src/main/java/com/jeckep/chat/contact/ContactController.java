@@ -2,18 +2,18 @@ package com.jeckep.chat.contact;
 
 import com.jeckep.chat.util.Path;
 import com.jeckep.chat.util.ViewUtil;
-import spark.Request;
-import spark.Response;
-import spark.Route;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 
-import java.util.HashMap;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
-
+@Controller
 public class ContactController {
-    public static Route serveContactPage = (Request request, Response response) -> {
-        Map<String, Object> model = new HashMap<>();
+    @GetMapping(Path.Web.CONTACT)
+    public String index(Map<String, Object> model, HttpServletRequest request) {
         model.put("nav_active", "contact");
-        return ViewUtil.render(request, model, Path.Template.CONTACT);
-    };
+        ViewUtil.putLayoutVars(request, model);
+        return Path.Template.CONTACT;
+    }
 }

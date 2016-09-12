@@ -1,48 +1,37 @@
 package com.jeckep.chat.chat;
 
-import com.github.jeckep.spark.PSF;
 import com.jeckep.chat.Application;
 import com.jeckep.chat.message.Msg;
 import com.jeckep.chat.user.User;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
-import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.PingMessage;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
-import java.net.HttpCookie;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
-@WebSocket
-public class ChatWebSocketHandler {
-    static Map<Integer, Session> liveSessions = new HashMap<>();
+public class ChatWebSocketHandler extends TextWebSocketHandler {
+    static Map<Integer, WebSocketSession> liveSessions = new HashMap<>();
 
-    @OnWebSocketConnect
-    public void onConnect(Session session) throws Exception {
+    @Override
+    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         User user = resolveUser(session);
         liveSessions.put(user.getId(), session);
         //TODO process status changed to user with whom currentUser can talk
         log.info("User '" + user.getId() + "' is connected to chat websocket.");
     }
 
-    @OnWebSocketClose
-    public void onClose(Session session, int statusCode, String reason) {
-        User user = resolveUser(session);
-        liveSessions.remove(user.getId());
-        //TODO process status changed to user with whom currentUser was talking
-        log.info("User '" + user.getId() + "' is disconnected from chat websocket.");
-    }
-
-    @OnWebSocketMessage
-    public void onMessage(Session session, String json) {
+    @Override
+    public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         try {
-            WSMsg msg = MsgManager.parse(json);
+            WSMsg msg = MsgManager.parse(message.getPayload());
             User sender = resolveUser(session);
             User interlocutor = Application.userDao.getUserById(msg.getTo());
             //TODO check that current user can send messages to interlocutor
@@ -59,22 +48,19 @@ public class ChatWebSocketHandler {
         }
     }
 
-    private static User resolveUser(Session session){
-        String sessionCookie = getSessionCookie(session);
-        if (sessionCookie == null){
-            return null;
-        }
-        return AuthedUserListHolder.getInstance().getBySessionCookie(sessionCookie);
+
+    @Override
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
+        User user = resolveUser(session);
+        liveSessions.remove(user.getId());
+        //TODO process status changed to user with whom currentUser was talking
+        log.info("User '" + user.getId() + "' is disconnected from chat websocket.");
     }
 
-    private static String getSessionCookie(Session session){
-        for(HttpCookie cookie: session.getUpgradeRequest().getCookies()){
-            if(PSF.SESSION_COOKIE_NAME.equals(cookie.getName())){
-                return cookie.getValue();
-            }
-        }
-        return null;
+    private static User resolveUser(WebSocketSession session){
+        return (User) session.getAttributes().get("currentUser");
     }
+
 
     public static Set<Integer> getOnlineUserIds(){
         cleanSessions();
@@ -92,6 +78,7 @@ public class ChatWebSocketHandler {
     static {
         pinger.start();
     }
+
     private static class KeepWebSocketSessionAlive implements Runnable {
         @Override
         public void run() {
@@ -99,9 +86,9 @@ public class ChatWebSocketHandler {
                 try {
                     Thread.sleep(50 * 1000);
                     cleanSessions();
-                    for(Session session: liveSessions.values()){
+                    for(WebSocketSession session: liveSessions.values()){
                         if(session.isOpen()){
-                            session.getRemote().sendPing(null);
+                            session.sendMessage(new PingMessage());
                         }
                     }
                 } catch (InterruptedException e) {

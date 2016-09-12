@@ -4,8 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jeckep.chat.Application;
 import com.jeckep.chat.user.User;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.jetty.websocket.api.Session;
 import org.json.JSONObject;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -25,14 +26,14 @@ public class MsgManager {
        return mapper.readValue(json, WSMsg.class);
     }
 
-    static void process(MsgWrapper msg, Session senderSession){
+    static void process(MsgWrapper msg, WebSocketSession senderSession){
         if(COMMAND_LOAD_OLD.equals(msg.getMessage())){
             sendOldMessagesToLiveAgainUser(msg.getCurrentUser(), msg.getInterlocutor(), senderSession);
         }else{
             Application.msgDao.create(msg.getMsg());
             //echo to sender
             send(senderSession, msg);
-            Session receiverSession = liveSessions.get(msg.getReceiver());
+            WebSocketSession receiverSession = liveSessions.get(msg.getReceiver());
             if(receiverSession != null && msg.getSender() != msg.getReceiver()){
                 //send to receiver
                 // swap current user and interlocutor
@@ -41,18 +42,18 @@ public class MsgManager {
         }
     }
 
-    private static void sendOldMessagesToLiveAgainUser(User currentUser, User interlocutor, Session session) {
+    private static void sendOldMessagesToLiveAgainUser(User currentUser, User interlocutor, WebSocketSession session) {
         Application.msgDao.getAllMsgsFor(currentUser.getId(), interlocutor.getId()).stream()
                 .sorted((a,b) -> a.getTs().compareTo(b.getTs()))
                 .forEach( message -> send(session, new MsgWrapper(message, currentUser, interlocutor)));
     }
 
-    private static void send(Session session, MsgWrapper msg){
+    private static void send(WebSocketSession session, MsgWrapper msg){
         try {
             if(session.isOpen()){
-                session.getRemote().sendString(String.valueOf(new JSONObject()
+                session.sendMessage(new TextMessage(String.valueOf(new JSONObject()
                         .put("userMessage", createHtmlMessageFromSender(msg))
-                ));
+                )));
             }
         } catch (Exception e) {
             log.error("Cannot process message from user:" + msg.getSender() + " to user: " + msg.getReceiver(), e);

@@ -7,24 +7,35 @@ import com.jeckep.chat.user.User;
 import com.jeckep.chat.util.Path;
 import com.jeckep.chat.util.RequestUtil;
 import com.jeckep.chat.util.ViewUtil;
-import spark.Request;
-import spark.Response;
-import spark.Route;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.HashMap;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.jeckep.chat.util.MvcUtil.redirect;
 
+@Controller
 public class ChatroomController {
-    public static Route serveChatPage = (Request request, Response response) -> {
-        String userToId = request.params("id");
 
-        if(!LoginController.ensureUserIsLoggedIn(request, response)){
+    @GetMapping(Path.Web.CHAT_ROOM)
+    public String serveChatPage(Map<String, Object> model, HttpServletRequest request){
+        return serve(model, request, null);
+    }
+
+    @GetMapping(Path.Web.CHAT_ROOM + "{id}")
+    public String serveChatPageWithMessages(Map<String, Object> model, HttpServletRequest request, @PathVariable("id") String userToId){
+        return serve(model, request, userToId);
+    }
+
+    private String serve(Map<String, Object> model, HttpServletRequest request, @PathVariable("id") String userToId){
+        if(!LoginController.ensureUserIsLoggedIn(request)){
             //redirect to login
-            return null;
+            return redirect(Path.Web.LOGIN);
         }
         final User currentUser = RequestUtil.getSessionCurrentUser(request);
         final List<User> users = getUserListFor(currentUser);
@@ -32,13 +43,14 @@ public class ChatroomController {
         final Set<Integer> onlineIds = users.stream().map(User::getId).collect(Collectors.toSet());
         onlineIds.retainAll(ChatWebSocketHandler.getOnlineUserIds());
 
-        Map<String, Object> model = new HashMap<>();
         model.put("users", users);
         model.put("nav_active", "chatroom");
         model.put("userToId", userToId);
         model.put("onlineIds", onlineIds);
-        return ViewUtil.render(request, model, Path.Template.CHATROOM);
-    };
+
+        ViewUtil.putLayoutVars(request, model);
+        return Path.Template.CHATROOM;
+    }
 
     private static List<User> getUserListFor(User currentUser){
         return Application.userDao.getAllUsersExcept(currentUser.getId());
