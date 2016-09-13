@@ -17,6 +17,4 @@ public class IndexController {
         ViewUtil.putLayoutVars(request, model);
         return Path.Template.INDEX;
     }
-
-
 }
