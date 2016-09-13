@@ -1,14 +1,22 @@
-package com.jeckep.chat.user;
+package com.jeckep.chat.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import javax.persistence.*;
 import java.io.Serializable;
 
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "chatuser")
 public class User implements IUser, Serializable{
-    int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "chatuser_id_seq")
+    @SequenceGenerator(name = "chatuser_id_seq", sequenceName = "chatuser_id_seq", allocationSize = 1)
+    Integer id;
     String name;
     String surname;
     String email;

@@ -7,7 +7,6 @@ import static com.jeckep.chat.util.RequestUtil.getSessionCurrentUser;
 import static com.jeckep.chat.util.RequestUtil.getSessionLocale;
 
 public class ViewUtil {
-
     public static void putLayoutVars(HttpServletRequest request, Map<String, Object> model) {
         model.put("msg", new MessageBundle(getSessionLocale(request)));
         model.put("currentUser", getSessionCurrentUser(request));

@@ -1,10 +1,12 @@
 package com.jeckep.chat.chat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jeckep.chat.Application;
-import com.jeckep.chat.user.User;
+import com.jeckep.chat.model.User;
+import com.jeckep.chat.repository.MsgService;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -18,7 +20,12 @@ import static j2html.TagCreator.div;
 import static j2html.TagCreator.img;
 
 @Slf4j
+@Component
 public class MsgManager {
+
+    @Autowired
+    public MsgService msgService;
+
     private static final String COMMAND_LOAD_OLD = "LOAD_OLD_MESSAGES";
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -26,11 +33,11 @@ public class MsgManager {
        return mapper.readValue(json, WSMsg.class);
     }
 
-    static void process(MsgWrapper msg, WebSocketSession senderSession){
+    void process(MsgWrapper msg, WebSocketSession senderSession){
         if(COMMAND_LOAD_OLD.equals(msg.getMessage())){
             sendOldMessagesToLiveAgainUser(msg.getCurrentUser(), msg.getInterlocutor(), senderSession);
         }else{
-            Application.msgDao.create(msg.getMsg());
+            msgService.save(msg.getMsg());
             //echo to sender
             send(senderSession, msg);
             WebSocketSession receiverSession = liveSessions.get(msg.getReceiver());
@@ -42,8 +49,8 @@ public class MsgManager {
         }
     }
 
-    private static void sendOldMessagesToLiveAgainUser(User currentUser, User interlocutor, WebSocketSession session) {
-        Application.msgDao.getAllMsgsFor(currentUser.getId(), interlocutor.getId()).stream()
+    private void sendOldMessagesToLiveAgainUser(User currentUser, User interlocutor, WebSocketSession session) {
+        msgService.getAllMsgsFor(currentUser.getId(), interlocutor.getId()).stream()
                 .sorted((a,b) -> a.getTs().compareTo(b.getTs()))
                 .forEach( message -> send(session, new MsgWrapper(message, currentUser, interlocutor)));
     }

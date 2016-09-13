@@ -1,12 +1,13 @@
-package com.jeckep.chat.chatroom;
+package com.jeckep.chat.controller;
 
-import com.jeckep.chat.Application;
 import com.jeckep.chat.chat.ChatWebSocketHandler;
 import com.jeckep.chat.login.LoginController;
-import com.jeckep.chat.user.User;
+import com.jeckep.chat.model.User;
+import com.jeckep.chat.repository.UserService;
 import com.jeckep.chat.util.Path;
 import com.jeckep.chat.util.RequestUtil;
 import com.jeckep.chat.util.ViewUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,8 @@ import static com.jeckep.chat.util.MvcUtil.redirect;
 
 @Controller
 public class ChatroomController {
+    @Autowired
+    private UserService userService;
 
     @GetMapping(Path.Web.CHAT_ROOM)
     public String serveChatPage(Map<String, Object> model, HttpServletRequest request){
@@ -52,7 +55,7 @@ public class ChatroomController {
         return Path.Template.CHATROOM;
     }
 
-    private static List<User> getUserListFor(User currentUser){
-        return Application.userDao.getAllUsersExcept(currentUser.getId());
+    private List<User> getUserListFor(User currentUser){
+        return userService.getAllUsersExcept(currentUser.getId());
     }
 }

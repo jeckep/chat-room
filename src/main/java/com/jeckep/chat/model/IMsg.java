@@ -1,7 +1,7 @@
-package com.jeckep.chat.message;
+package com.jeckep.chat.model;
 
 public interface IMsg {
-    int getId();
+    Integer getId();
 
     int getSender();
 

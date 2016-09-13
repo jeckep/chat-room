@@ -1,12 +1,13 @@
 package com.jeckep.chat.login;
 
-import com.jeckep.chat.Application;
 import com.jeckep.chat.login.oauth.OAuth;
-import com.jeckep.chat.user.IUser;
-import com.jeckep.chat.user.User;
+import com.jeckep.chat.model.IUser;
+import com.jeckep.chat.model.User;
+import com.jeckep.chat.repository.UserService;
 import com.jeckep.chat.util.Path;
 import com.jeckep.chat.util.ViewUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,11 +17,13 @@ import java.io.IOException;
 import java.util.Map;
 
 import static com.jeckep.chat.util.MvcUtil.redirect;
-import static com.jeckep.chat.util.RequestUtil.getQueryLoginRedirect;
 
 @Slf4j
 @Controller
 public class LoginController {
+
+    @Autowired
+    private UserService userService;
 
     @GetMapping(Path.Web.LOGIN)
     public String serveLoginPage(Map<String, Object> model, HttpServletRequest request) {
@@ -50,14 +53,11 @@ public class LoginController {
             return  redirect(Path.Web.LOGIN);
         }
         final IUser iuser = OAuth.service(service).retriveInfo(code);
-        final User user = Application.userDao.findOrCreate(iuser);
+        final User user = userService.findOrCreate(iuser);
 
         //user authenticated
         //set currentUser To Session. If user is in the session it means that they are logged in
         request.getSession().setAttribute("currentUser", user);
-        if (getQueryLoginRedirect(request) != null) {
-            return redirect(getQueryLoginRedirect(request));
-        }
 
         String redirectUrl = (String) request.getSession().getAttribute("loginRedirect");
         if(redirectUrl != null){

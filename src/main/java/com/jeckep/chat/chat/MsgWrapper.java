@@ -1,8 +1,8 @@
 package com.jeckep.chat.chat;
 
-import com.jeckep.chat.message.IMsg;
-import com.jeckep.chat.message.Msg;
-import com.jeckep.chat.user.User;
+import com.jeckep.chat.model.IMsg;
+import com.jeckep.chat.model.Msg;
+import com.jeckep.chat.model.User;
 
 import java.util.Date;
 
@@ -18,7 +18,7 @@ public class MsgWrapper implements IMsg{
     }
 
     @Override
-    public int getId() {
+    public Integer getId() {
         return msg.getId();
     }
 

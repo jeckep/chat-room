@@ -1,9 +1,11 @@
 package com.jeckep.chat.chat;
 
-import com.jeckep.chat.Application;
-import com.jeckep.chat.message.Msg;
-import com.jeckep.chat.user.User;
+import com.jeckep.chat.model.Msg;
+import com.jeckep.chat.model.User;
+import com.jeckep.chat.repository.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.PingMessage;
 import org.springframework.web.socket.TextMessage;
@@ -17,7 +19,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
+@Component
 public class ChatWebSocketHandler extends TextWebSocketHandler {
+
+    @Autowired
+    private MsgManager msgManager;
+    @Autowired
+    private UserService userService;
+
     static Map<Integer, WebSocketSession> liveSessions = new HashMap<>();
 
     @Override
@@ -33,11 +42,11 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         try {
             WSMsg msg = MsgManager.parse(message.getPayload());
             User sender = resolveUser(session);
-            User interlocutor = Application.userDao.getUserById(msg.getTo());
+            User interlocutor = userService.getUserById(msg.getTo());
             //TODO check that current user can send messages to interlocutor
 
             log.info("Message from user:" + sender.getId() + " to user: " + msg.getTo() + " received and parsed.");
-            MsgManager.process(
+            msgManager.process(
                     new MsgWrapper(
                             new Msg(sender.getId(), msg.getTo(), msg.getMessage()),
                             sender,

@@ -1,4 +1,4 @@
-package com.jeckep.chat.user;
+package com.jeckep.chat.model;
 
 public interface IUser {
     String getName();
