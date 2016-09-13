@@ -18,7 +18,6 @@ public class Application {
     public static void main(String[] args) {
         userDao = new UserDao();
         msgDao = new MsgDao();
-        migrateDB();
 
 //        final JedisPool pool = new JedisPool(new JedisPoolConfig(), "redis");
 //        final PSF psf = new PSF(new RedisSimplePersister(new JedisThreadSafeConnector(pool)))
@@ -44,11 +43,7 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 
-    private static void migrateDB(){
-        Flyway flyway = new Flyway();
-        flyway.setDataSource(Envs.DB_URL, Envs.DB_USER, Envs.DB_PASSWORD);
-        flyway.migrate();
-    }
+
 
     public static void info(){
         log.info("freeMemory:" + Runtime.getRuntime().freeMemory()/1024/1204 + "Mb");
