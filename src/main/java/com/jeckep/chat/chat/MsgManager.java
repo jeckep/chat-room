@@ -1,8 +1,8 @@
 package com.jeckep.chat.chat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jeckep.chat.model.User;
-import com.jeckep.chat.repository.MsgService;
+import com.jeckep.chat.domain.User;
+import com.jeckep.chat.service.MsgService;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;

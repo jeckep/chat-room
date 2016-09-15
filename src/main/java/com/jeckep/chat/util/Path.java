@@ -7,14 +7,12 @@ public class Path {
     public static class Web {
         @Getter public static final String INDEX = "/";
         @Getter public static final String LOGIN = "/loginpage/";
-        @Getter public static final String LOGIN_AUTH2 = "/login/{service}/";
         @Getter public static final String LOGIN_GOOGLE = "/login/google/";
         @Getter public static final String LOGIN_LINKEDIN = "/login/linkedin/";
         @Getter public static final String LOGIN_GITHUB= "/login/github/";
         @Getter public static final String LOGIN_VK = "/login/vk/";
         @Getter public static final String LOGIN_FB = "/login/fb/";
         @Getter public static final String LOGOUT = "/logout";
-        @Getter public static final String OAUTH2_CALLBACK = "/oauth2callback/{service}/";
         @Getter public static final String CHAT_ROOM = "/chatroom/";
         @Getter public static final String CONTACT = "/contact/";
     }

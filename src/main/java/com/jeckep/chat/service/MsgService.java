@@ -1,6 +1,7 @@
-package com.jeckep.chat.repository;
+package com.jeckep.chat.service;
 
-import com.jeckep.chat.model.Msg;
+import com.jeckep.chat.domain.Msg;
+import com.jeckep.chat.domain.MsgRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

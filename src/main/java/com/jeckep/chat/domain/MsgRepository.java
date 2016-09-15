@@ -1,6 +1,5 @@
-package com.jeckep.chat.repository;
+package com.jeckep.chat.domain;
 
-import com.jeckep.chat.model.Msg;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

@@ -1,8 +1,8 @@
 package com.jeckep.chat.controller;
 
 import com.jeckep.chat.chat.ChatWebSocketHandler;
-import com.jeckep.chat.model.User;
-import com.jeckep.chat.repository.UserService;
+import com.jeckep.chat.domain.User;
+import com.jeckep.chat.service.UserService;
 import com.jeckep.chat.util.Path;
 import com.jeckep.chat.util.RequestUtil;
 import com.jeckep.chat.util.ViewUtil;

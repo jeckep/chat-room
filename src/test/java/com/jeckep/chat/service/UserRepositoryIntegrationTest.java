@@ -1,4 +1,4 @@
-package com.jeckep.chat.repository;
+package com.jeckep.chat.service;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

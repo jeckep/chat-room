@@ -1,4 +1,4 @@
-package com.jeckep.chat.login;
+package com.jeckep.chat.controller;
 
 import com.jeckep.chat.util.Path;
 import com.jeckep.chat.util.ViewUtil;

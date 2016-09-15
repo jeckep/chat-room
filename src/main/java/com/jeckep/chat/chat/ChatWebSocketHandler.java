@@ -1,8 +1,8 @@
 package com.jeckep.chat.chat;
 
-import com.jeckep.chat.model.Msg;
-import com.jeckep.chat.model.User;
-import com.jeckep.chat.repository.UserService;
+import com.jeckep.chat.domain.Msg;
+import com.jeckep.chat.domain.User;
+import com.jeckep.chat.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContext;

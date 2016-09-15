@@ -1,6 +1,6 @@
 package com.jeckep.chat.util;
 
-import com.jeckep.chat.model.User;
+import com.jeckep.chat.domain.User;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

@@ -1,8 +1,8 @@
 package com.jeckep.chat.chat;
 
-import com.jeckep.chat.model.IMsg;
-import com.jeckep.chat.model.Msg;
-import com.jeckep.chat.model.User;
+import com.jeckep.chat.domain.IMsg;
+import com.jeckep.chat.domain.Msg;
+import com.jeckep.chat.domain.User;
 
 import java.util.Date;
 

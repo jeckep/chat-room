@@ -1,4 +1,4 @@
-package com.jeckep.chat.model;
+package com.jeckep.chat.domain;
 
 public interface IMsg {
     Integer getId();

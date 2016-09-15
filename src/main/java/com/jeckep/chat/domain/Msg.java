@@ -1,4 +1,4 @@
-package com.jeckep.chat.model;
+package com.jeckep.chat.domain;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,7 +1,7 @@
 package com.jeckep.chat.login.oauth;
 
-import com.jeckep.chat.model.User;
-import com.jeckep.chat.repository.UserService;
+import com.jeckep.chat.domain.User;
+import com.jeckep.chat.service.UserService;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.PrincipalExtractor;
 
 import java.util.Map;
