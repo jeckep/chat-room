@@ -5,6 +5,7 @@ import com.jeckep.chat.model.User;
 import com.jeckep.chat.repository.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.PingMessage;
@@ -67,7 +68,9 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     }
 
     private static User resolveUser(WebSocketSession session){
-        return (User) session.getAttributes().get("currentUser");
+        return (User) ((SecurityContext)session.getAttributes().get("SPRING_SECURITY_CONTEXT"))
+                .getAuthentication()
+                .getPrincipal();
     }
 
 

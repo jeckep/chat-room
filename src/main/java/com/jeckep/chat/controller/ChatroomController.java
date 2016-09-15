@@ -1,7 +1,6 @@
 package com.jeckep.chat.controller;
 
 import com.jeckep.chat.chat.ChatWebSocketHandler;
-import com.jeckep.chat.login.LoginController;
 import com.jeckep.chat.model.User;
 import com.jeckep.chat.repository.UserService;
 import com.jeckep.chat.util.Path;
@@ -17,8 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static com.jeckep.chat.util.MvcUtil.redirect;
 
 @Controller
 public class ChatroomController {
@@ -36,11 +33,7 @@ public class ChatroomController {
     }
 
     private String serve(Map<String, Object> model, HttpServletRequest request, @PathVariable("id") String userToId){
-        if(!LoginController.ensureUserIsLoggedIn(request)){
-            //redirect to login
-            return redirect(Path.Web.LOGIN);
-        }
-        final User currentUser = RequestUtil.getSessionCurrentUser(request);
+        final User currentUser = RequestUtil.getCurrentUser();
         final List<User> users = getUserListFor(currentUser);
 
         final Set<Integer> onlineIds = users.stream().map(User::getId).collect(Collectors.toSet());
