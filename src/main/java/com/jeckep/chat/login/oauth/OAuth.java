@@ -3,6 +3,7 @@ package com.jeckep.chat.login.oauth;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.scribejava.apis.GitHubApi;
 import com.github.scribejava.apis.GoogleApi20;
 import com.github.scribejava.apis.LinkedInApi20;
 import com.github.scribejava.apis.VkontakteApi;
@@ -28,6 +29,7 @@ public class OAuth {
         services.put(VK.serviceCode, new VK());
         services.put(Google.serviceCode, new Google());
         services.put(Linkedin.serviceCode, new Linkedin());
+        services.put(GitHub.serviceCode, new GitHub());
     }
 
     public static Service service(String service){
@@ -146,6 +148,48 @@ public class OAuth {
             @JsonProperty("firstName") String name;
             @JsonProperty("pictureUrl") String picture;
             @JsonProperty("emailAddress") String email;
+        }
+    }
+
+    private static class GitHub implements Service{
+        private static final String serviceCode = "github";
+        private static final String REQUEST_URL = "https://api.github.com/user";
+        private static final OAuth20Service service = new ServiceBuilder()
+                .apiKey(Envs.GITHUB_API_KEY)
+                .apiSecret(Envs.GITHUB_API_SECRET)
+                .callback(callbackURL(serviceCode))
+                .scope("user:email")
+                .build(GitHubApi.instance());
+
+        public OAuth20Service service(){
+            return service;
+        }
+
+        public IUser retriveInfo(String authCode) throws IOException, JSONException {
+            final OAuth2AccessToken accessToken =  service.getAccessToken(authCode);
+            final OAuthRequest req = new OAuthRequest(Verb.GET, REQUEST_URL, service);
+            service.signRequest(accessToken,req);
+            final com.github.scribejava.core.model.Response res =  req.send();
+            GithubUser gu = new ObjectMapper().readValue(res.getBody(), GithubUser.class);
+            return gu;
+        }
+
+        @Data
+        @JsonIgnoreProperties(ignoreUnknown = true)
+        private static class GithubUser implements IUser {
+            @JsonProperty("name") String fullname;
+            @JsonProperty("avatar_url") String picture;
+            String email;
+
+            @Override
+            public String getName() {
+                return fullname.split("\\s")[0];
+            }
+
+            @Override
+            public String getSurname() {
+                return fullname.split("\\s")[1];
+            }
         }
     }
 

@@ -18,4 +18,7 @@ public class Envs {
 
     public static final String LD_API_KEY = System.getenv("LD_API_KEY");
     public static final String LD_API_SECRET = System.getenv("LD_API_SECRET");
+
+    public static final String GITHUB_API_KEY = System.getenv("GITHUB_API_KEY");
+    public static final String GITHUB_API_SECRET = System.getenv("GITHUB_API_SECRET");
 }
