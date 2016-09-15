@@ -5,7 +5,7 @@ import com.jeckep.chat.login.oauth.*;
 import com.jeckep.chat.login.oauth.vk.OAuth2ClientAuthenticationProcessingFilter;
 import com.jeckep.chat.login.oauth.vk.UserInfoTokenServices;
 import com.jeckep.chat.login.oauth.vk.VkUserInfoModifier;
-import com.jeckep.chat.repository.UserService;
+import com.jeckep.chat.service.UserService;
 import com.jeckep.chat.util.Path;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
