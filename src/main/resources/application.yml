@@ -1,3 +1,30 @@
+vk:
+  client:
+    clientId: ${VK_API_KEY}
+    clientSecret: ${VK_API_SECRET}
+    accessTokenUri: https://oauth.vk.com/access_token
+    userAuthorizationUri: https://oauth.vk.com/authorize
+    clientAuthenticationScheme: form
+    scope:
+     - email
+     - profile
+  resource:
+    userInfoUri: https://api.vk.com/method/users.get?fields=photo_100
+
+google:
+  client:
+    clientId: ${GOOGLE_API_KEY}
+    clientSecret: ${GOOGLE_API_SECRET}
+    accessTokenUri: https://www.googleapis.com/oauth2/v4/token
+    userAuthorizationUri: https://accounts.google.com/o/oauth2/auth
+    clientAuthenticationScheme: form
+    scope:
+     - email
+     - profile
+  resource:
+    userInfoUri: https://www.googleapis.com/userinfo/v2/me
+
+
 linkedin:
   client:
     clientId: ${LD_API_KEY}
