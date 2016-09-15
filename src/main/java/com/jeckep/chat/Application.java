@@ -12,6 +12,7 @@ import org.springframework.boot.autoconfigure.security.oauth2.resource.Principal
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -69,47 +70,39 @@ public class Application extends WebSecurityConfigurerAdapter {
     private Filter ssoFilter() {
         CompositeFilter filter = new CompositeFilter();
         List<Filter> filters = new ArrayList<>();
-
-        OAuth2ClientAuthenticationProcessingFilter facebookFilter = new OAuth2ClientAuthenticationProcessingFilter(Path.Web.LOGIN_FB);
-        OAuth2RestTemplate facebookTemplate = new OAuth2RestTemplate(facebook(), oauth2ClientContext);
-        facebookFilter.setRestTemplate(facebookTemplate);
-        facebookFilter.setTokenServices(new UserInfoTokenServices(facebookResource().getUserInfoUri(), facebook().getClientId()));
-        filters.add(facebookFilter);
-
-        OAuth2ClientAuthenticationProcessingFilter githubFilter = new OAuth2ClientAuthenticationProcessingFilter(Path.Web.LOGIN_GITHUB);
-        OAuth2RestTemplate githubTemplate = new OAuth2RestTemplate(github(), oauth2ClientContext);
-        githubFilter.setRestTemplate(githubTemplate);
-        UserInfoTokenServices userInfoTokenServices = new UserInfoTokenServices(githubResource().getUserInfoUri(), github().getClientId());
-        userInfoTokenServices.setPrincipalExtractor(new GithubPrincipalExtractor(userService));
-        githubFilter.setTokenServices(userInfoTokenServices);
-        filters.add(githubFilter);
-
+        filters.add(ssoFilter(facebook(), Path.Web.LOGIN_FB));
+        filters.add(ssoFilter(github(), Path.Web.LOGIN_GITHUB));
+        filters.add(ssoFilter(linkedin(), Path.Web.LOGIN_LINKEDIN));
         filter.setFilters(filters);
         return filter;
     }
 
-    @Bean
-    @ConfigurationProperties("facebook.client")
-    public AuthorizationCodeResourceDetails facebook() {
-        return new AuthorizationCodeResourceDetails();
+    private Filter ssoFilter(ClientResources client, String path) {
+        OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingFilter(path);
+        OAuth2RestTemplate template = new OAuth2RestTemplate(client.getClient(), oauth2ClientContext);
+        filter.setRestTemplate(template);
+        UserInfoTokenServices userInfoTokenServices = new UserInfoTokenServices(client.getResource().getUserInfoUri(), client.getClient().getClientId());
+        userInfoTokenServices.setPrincipalExtractor(client.getPrincipalExtractor());
+        filter.setTokenServices(userInfoTokenServices);
+        return filter;
     }
 
     @Bean
-    @ConfigurationProperties("facebook.resource")
-    public ResourceServerProperties facebookResource() {
-        return new ResourceServerProperties();
+    @ConfigurationProperties("github")
+    public ClientResources github() {
+        return new ClientResources(new GithubPrincipalExtractor(userService));
     }
 
     @Bean
-    @ConfigurationProperties("github.client")
-    public AuthorizationCodeResourceDetails github() {
-        return new AuthorizationCodeResourceDetails();
+    @ConfigurationProperties("facebook")
+    public ClientResources facebook() {
+        return new ClientResources(new FbPrincipalExtractor(userService));
     }
 
     @Bean
-    @ConfigurationProperties("github.resource")
-    public ResourceServerProperties githubResource() {
-        return new ResourceServerProperties();
+    @ConfigurationProperties("linkedin")
+    public ClientResources linkedin() {
+        return new ClientResources(new LdPrincipalExtractor(userService));
     }
 
     @Bean
@@ -118,6 +111,32 @@ public class Application extends WebSecurityConfigurerAdapter {
         registration.setFilter(filter);
         registration.setOrder(-100);
         return registration;
+    }
+
+    class ClientResources {
+        private PrincipalExtractor principalExtractor;
+
+        public ClientResources(PrincipalExtractor principalExtractor) {
+            this.principalExtractor = principalExtractor;
+        }
+
+        @NestedConfigurationProperty
+        private AuthorizationCodeResourceDetails client = new AuthorizationCodeResourceDetails();
+
+        @NestedConfigurationProperty
+        private ResourceServerProperties resource = new ResourceServerProperties();
+
+        public AuthorizationCodeResourceDetails getClient() {
+            return client;
+        }
+
+        public ResourceServerProperties getResource() {
+            return resource;
+        }
+
+        public PrincipalExtractor getPrincipalExtractor() {
+            return principalExtractor;
+        }
     }
 
     public static class GithubPrincipalExtractor implements PrincipalExtractor {
@@ -133,6 +152,42 @@ public class Application extends WebSecurityConfigurerAdapter {
             final String surname = ((String) map.get("name")).split("\\s")[1];
             final String email = (String) map.get("email");
             final String picture = (String) map.get("avatar_url");
+
+            return userService.findOrCreate(new User(name, surname, email, picture));
+        }
+    }
+
+    public static class FbPrincipalExtractor implements PrincipalExtractor {
+        final UserService userService;
+
+        public FbPrincipalExtractor(UserService userService) {
+            this.userService = userService;
+        }
+
+        @Override
+        public Object extractPrincipal(Map<String, Object> map) {
+            final String name =  (String) map.get("first_name");
+            final String surname = (String) map.get("last_name");
+            final String email = (String) map.get("email");
+            final String picture = (String) ((Map) ((Map) map.get("picture")).get("data")).get("url");
+
+            return userService.findOrCreate(new User(name, surname, email, picture));
+        }
+    }
+
+    public static class LdPrincipalExtractor implements PrincipalExtractor {
+        final UserService userService;
+
+        public LdPrincipalExtractor(UserService userService) {
+            this.userService = userService;
+        }
+
+        @Override
+        public Object extractPrincipal(Map<String, Object> map) {
+            final String name =  (String) map.get("firstName");
+            final String surname = (String) map.get("lastName");
+            final String email = (String) map.get("emailAddress");
+            final String picture = (String) map.get("pictureUrl");
 
             return userService.findOrCreate(new User(name, surname, email, picture));
         }
