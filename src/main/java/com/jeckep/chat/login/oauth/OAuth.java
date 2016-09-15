@@ -3,10 +3,7 @@ package com.jeckep.chat.login.oauth;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.scribejava.apis.GitHubApi;
-import com.github.scribejava.apis.GoogleApi20;
-import com.github.scribejava.apis.LinkedInApi20;
-import com.github.scribejava.apis.VkontakteApi;
+import com.github.scribejava.apis.*;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuthRequest;
@@ -30,6 +27,7 @@ public class OAuth {
         services.put(Google.serviceCode, new Google());
         services.put(Linkedin.serviceCode, new Linkedin());
         services.put(GitHub.serviceCode, new GitHub());
+        services.put(FB.serviceCode, new FB());
     }
 
     public static Service service(String service){
@@ -189,6 +187,44 @@ public class OAuth {
             @Override
             public String getSurname() {
                 return fullname.split("\\s")[1];
+            }
+        }
+    }
+
+    private static class FB implements Service{
+        private static final String serviceCode = "fb";
+        private static final String REQUEST_URL = "https://graph.facebook.com/me?fields=first_name,last_name,email,picture";
+        private static final OAuth20Service service = new ServiceBuilder()
+                .apiKey(Envs.FB_API_KEY)
+                .apiSecret(Envs.FB_API_SECRET)
+                .callback(callbackURL(serviceCode))
+                .scope("public_profile email")
+                .build(FacebookApi.instance());
+
+        public OAuth20Service service(){
+            return service;
+        }
+
+        public IUser retriveInfo(String authCode) throws IOException, JSONException {
+            final OAuth2AccessToken accessToken =  service.getAccessToken(authCode);
+            final OAuthRequest req = new OAuthRequest(Verb.GET, REQUEST_URL, service);
+            service.signRequest(accessToken,req);
+            final com.github.scribejava.core.model.Response res =  req.send();
+            FbUser fu = new ObjectMapper().readValue(res.getBody(), FbUser.class);
+            return fu;
+        }
+
+        @Data
+        @JsonIgnoreProperties(ignoreUnknown = true)
+        private static class FbUser implements IUser {
+            @JsonProperty("first_name") String name;
+            @JsonProperty("last_name") String surname;
+            String email;
+            String picture;
+
+            @JsonProperty("picture")
+            public void setPicture(Map<String, Object> picture) {
+                this.picture = (String)((Map<String, Object>) picture.get("data")).get("url");
             }
         }
     }
