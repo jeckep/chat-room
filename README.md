@@ -4,6 +4,8 @@ Example webapp with chatroom
 It's a web application that utilize a lot of cool frameworks. It can be used as a starting point or a template to create new web application based on it.
 Main features are: chatroom based on websockets, messages are stored in postgres, sessions are stored in redis, login via Google, VK, Linkedin, FB, Github using OAuth2, responsive bootstrap design, localisation.
 
+See spring-boot version of app in spring-boot branch.
+
 Dependencies
 ------------
 * Web framework: [spark](https://github.com/perwendel/spark)
