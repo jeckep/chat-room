@@ -19,4 +19,4 @@ VOLUME ["$INSTALL_PATH/src/main/resources/static"]
 
 
 EXPOSE 4567
-CMD ["/usr/lib/jvm/java-8-openjdk-amd64/bin/java","-Xmx1024m", "-jar", "target/sparkexample-jar-with-dependencies.jar"]
+CMD ["/usr/lib/jvm/java-8-openjdk-amd64/bin/java","-Xmx1024m", "-jar", "target/chat-1.0-SNAPSHOT.jar"]
