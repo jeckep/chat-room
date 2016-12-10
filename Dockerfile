@@ -10,12 +10,8 @@ RUN mkdir -p $INSTALL_PATH
 WORKDIR $INSTALL_PATH
 
 
-# Prepare by downloading dependencies
-ADD pom.xml /$INSTALL_PATH/pom.xml
-RUN ["mvn", "dependency:resolve"]
-RUN ["mvn", "verify"]
-
 # Adding source, compile and package into a fat jar
+ADD pom.xml /$INSTALL_PATH/pom.xml
 ADD src /$INSTALL_PATH/src
 RUN ["mvn", "package"]
 

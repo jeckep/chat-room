@@ -1,6 +1,7 @@
 package com.jeckep.chat.login;
 
 import com.jeckep.chat.util.Path;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
+@Ignore
 public class LoginViaVkTests {
 
 	@LocalServerPort
