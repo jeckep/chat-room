@@ -15,6 +15,7 @@ public class Path {
         @Getter public static final String LOGOUT = "/logout";
         @Getter public static final String CHAT_ROOM = "/chatroom/";
         @Getter public static final String CONTACT = "/contact/";
+        @Getter public static final String PAYMENTS = "/payments/";
     }
 
     public static class Template {
@@ -23,6 +24,7 @@ public class Path {
         public final static String LOGIN = "login/login.html";
         public static final String NOT_FOUND = "notFound.html";
         public static final String CONTACT = "contact.html";
+        public static final String PAYMENTS = "payments.html";
     }
 
 }
