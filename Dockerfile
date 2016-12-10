@@ -1,4 +1,4 @@
-FROM java:8
+FROM airdock/oracle-jdk:1.8
 MAINTAINER Yevgeniy Poluektov <yevgeniy.v.poluektov@gmail.com>
 
 # Install maven
