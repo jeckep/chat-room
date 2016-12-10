@@ -9,6 +9,7 @@ RUN mkdir -p $INSTALL_PATH
 
 WORKDIR $INSTALL_PATH
 
+
 # Prepare by downloading dependencies
 ADD pom.xml /$INSTALL_PATH/pom.xml
 RUN ["mvn", "dependency:resolve"]
