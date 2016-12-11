@@ -17,6 +17,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+        //TODO investigate HttpSessionHandshakeInterceptor(list of attributes)
         registry.addHandler(webSocketHandler, "/chat/")
                 .addInterceptors(new HttpSessionHandshakeInterceptor());
     }
