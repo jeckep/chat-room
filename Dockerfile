@@ -1,4 +1,4 @@
-FROM mobydock:forspped
+FROM airdock/oracle-jdk:1.8
 MAINTAINER Yevgeniy Poluektov <yevgeniy.v.poluektov@gmail.com>
 
 # Install maven
@@ -9,8 +9,7 @@ RUN mkdir -p $INSTALL_PATH
 
 WORKDIR $INSTALL_PATH
 
-#Clean
-RUN rm -rf /$INSTALL_PATH/pom.xml /$INSTALL_PATH/src
+
 # Adding source, compile and package into a fat jar
 ADD pom.xml /$INSTALL_PATH/pom.xml
 ADD src /$INSTALL_PATH/src
