@@ -21,7 +21,6 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
         // TODO WebUtils.isSameOrign
         registry.addHandler(webSocketHandler, "/chat/")
-                .addInterceptors(new HttpSessionHandshakeInterceptor())
-                .setAllowedOrigins("*");
+                .addInterceptors(new HttpSessionHandshakeInterceptor());
     }
 }
