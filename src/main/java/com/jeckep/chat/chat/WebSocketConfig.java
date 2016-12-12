@@ -18,7 +18,9 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         //TODO investigate HttpSessionHandshakeInterceptor(list of attributes)
-        registry.addHandler(webSocketHandler, "/chat/")
+        registry.addHandler(webSocketHandler, "/chat/",
+                "https:/jeckep.online/chat/", "ws://jeckep.online.chat",
+                "jeckep.online/chat/", "http://mobydock.chat/")
                 .addInterceptors(new HttpSessionHandshakeInterceptor());
     }
 }
