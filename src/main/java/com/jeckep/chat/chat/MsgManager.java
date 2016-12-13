@@ -70,6 +70,7 @@ public class MsgManager {
     //Builds a HTML element with a sender-name, a message, and a timestamp,
     private static String createHtmlMessageFromSender(MsgWrapper msg) {
         final DateFormat df = new SimpleDateFormat("HH:mm dd.MM");
+        //TODO somehow save user timezone and use it here
         df.setTimeZone(TimeZone.getTimeZone("Europe/Moscow"));
 
         final User sender = msg.curUsrIsSenderOfTheMsg()? msg.getCurrentUser() : msg.getInterlocutor();

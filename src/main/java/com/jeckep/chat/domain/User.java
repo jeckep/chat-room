@@ -1,11 +1,13 @@
 package com.jeckep.chat.domain;
 
+import com.jeckep.chat.domain.money.Payment;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -21,6 +23,9 @@ public class User implements IUser, Serializable{
     String surname;
     String email;
     String picture;
+
+    @OneToMany(mappedBy = "user")
+    List<Payment> payments;
 
 
     public User(String name, String surname, String email, String picture) {
@@ -38,5 +43,11 @@ public class User implements IUser, Serializable{
 
     public String getFullName(){
         return name + " " + surname;
+    }
+
+    public static User id(int id){
+        User user = new User();
+        user.setId(id);
+        return user;
     }
 }
